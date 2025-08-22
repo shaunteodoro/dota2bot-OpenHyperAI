@@ -206,12 +206,6 @@ function X.SkillsComplement()
 
 	if J.CanNotUseAbility(bot) then return end
 
-	ViscousNasalGoo = bot:GetAbilityByName('bristleback_viscous_nasal_goo')
-	QuillSpray = bot:GetAbilityByName('bristleback_quill_spray')
-	Bristleback = bot:GetAbilityByName('bristleback_bristleback')
-	Hairball = bot:GetAbilityByName('bristleback_hairball')
-	Warpath = bot:GetAbilityByName('bristleback_warpath')
-
 	bAttacking = J.IsAttacking(bot)
 	botHP = J.GetHP(bot)
 	botTarget = J.GetProperTarget(bot)
@@ -257,12 +251,15 @@ function X.ConsiderViscousNasalGoo()
 	if not J.CanCastAbility(ViscousNasalGoo) then
 		return BOT_ACTION_DESIRE_NONE, nil
 	end
-	if J.IsValidHero(nEnemyHeroes[1])
-	and #nEnemyHeroes > 1
-	and J.GetHP(bot) < 0.8
-	and nEnemyHeroes[1]:IsFacingLocation(bot:GetLocation(), 40)
-	then
-		return BOT_ACTION_DESIRE_NONE, nil
+	for _, enemyHero in pairs(nEnemyHeroes) do
+		if J.IsValidHero(enemyHero)
+		and J.GetHP(bot) < 0.6
+		and J.GetHP(bot) < J.GetHP(enemyHero)
+		and J.IsInRange(bot, enemyHero, 900)
+		and enemyHero:IsFacingLocation(bot:GetLocation(), 40)
+		then
+			return BOT_ACTION_DESIRE_NONE, nil
+		end
 	end
 
 	local nCastRange = J.GetProperCastRange(false, bot, ViscousNasalGoo:GetCastRange())

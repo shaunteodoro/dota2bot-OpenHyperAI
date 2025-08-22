@@ -1,6 +1,7 @@
 local Push = {}
 local J = require( GetScriptDirectory()..'/FunLib/jmz_func')
-
+local Customize = require(GetScriptDirectory()..'/Customize/general')
+Customize.ThinkLess = Customize.ThinkLess or 1
 local pingTimeDelta = 5
 local StartToPushTime = 16 * 60 -- after x mins, start considering to push.
 local weAreStronger = false
@@ -23,6 +24,7 @@ function Push.GetPushDesire(bot, lane)
 end
 
 function Push.GetPushDesireHelper(bot, lane)
+	if bot:IsInvulnerable() or not bot:IsHero() or not bot:IsAlive() or not string.find(bot:GetUnitName(), "hero") or bot:IsIllusion() then return BOT_MODE_DESIRE_NONE end
     if bot.laneToPush == nil then bot.laneToPush = lane end
 
     local nMaxDesire = 0.82
@@ -49,6 +51,12 @@ function Push.GetPushDesireHelper(bot, lane)
         currentTime = currentTime * 2
     end
 
+    J.Utils['GameStates'] = J.Utils['GameStates'] or {}
+    J.Utils['GameStates']['defendPings'] = J.Utils['GameStates']['defendPings'] or { pingedTime = GameTime() }
+    if GameTime() - J.Utils['GameStates']['defendPings'].pingedTime <= 5.0 then
+		return BOT_MODE_DESIRE_NONE
+	end
+
 	if (not bMyLane and J.IsCore(bot) and J.IsInLaningPhase())
     or (J.IsDoingRoshan(bot) and #J.GetAlliesNearLoc(J.GetCurrentRoshanLocation(), 2800) >= 3)
     or (isMidOrEarlyGame and ((#J.GetAlliesNearLoc(J.GetTormentorLocation(GetTeam()), 1600) >= 3) or #J.GetAlliesNearLoc(J.GetTormentorWaitingLocation(GetTeam()), 2500) >= 3))
@@ -60,19 +68,12 @@ function Push.GetPushDesireHelper(bot, lane)
 	for i = 1, #GetTeamPlayers( GetTeam() )
     do
 		local member = GetTeamMember(i)
-        if J.IsValidHero(member) and member:GetLevel() < 6 and GetUnitToUnitDistance(member,bot) <= 2500 then
+        if member ~= nil and member:GetLevel() < 6 then
             lowLvl = lowLvl + 1
-        end
-
-        if member ~= nil and not J.IsCore(bot) and J.IsCore(member) then
-            if bot:GetAssignedLane() == member:GetAssignedLane() then
-                if member.isInLanePhase == true then
-                    return BOT_MODE_DESIRE_EXTRA_LOW
-                end
-            end
+            return BOT_MODE_DESIRE_NONE
         end
     end
-    if lowLvl >= 2 then return BOT_MODE_DESIRE_VERYLOW end
+    -- if lowLvl >= 2 then return BOT_MODE_DESIRE_VERYLOW end
 
     -- weAreStronger = J.WeAreStronger(bot, nSearchRange)
     -- local laneFront = GetLaneFrontLocation(GetTeam(), lane, 0)
@@ -337,10 +338,10 @@ end
 local fNextMovementTime = 0
 function Push.PushThink(bot, lane)
     if J.CanNotUseAction(bot) then return end
-
+    if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "push") then return end
     local botAttackRange = bot:GetAttackRange()
     local fDeltaFromFront = (Min(J.GetHP(bot), 0.7) * 1000 - 700) + RemapValClamped(botAttackRange, 300, 700, 0, -600)
-    local nEnemyTowers = bot:GetNearbyTowers(1600, true)
+    local nEnemyTowers = bot:GetNearbyTowers(1200, true)
     local nAllyCreeps = bot:GetNearbyLaneCreeps(1200, false)
 
     if #nInRangeAlly < #nInRangeEnemy or Push.IsBuildingGlyphedBackdoor() then
@@ -425,15 +426,13 @@ function Push.PushThink(bot, lane)
     end
 
     local nBarracks = bot:GetNearbyBarracks(nRange, true)
-    if J.IsValidBuilding(nBarracks[1]) and J.CanBeAttacked(nBarracks[1]) then
-        for _, barrack in pairs(nBarracks) do
-            if J.IsValid(barrack) and string.find(barrack:GetUnitName(), 'melee') then
+    for _, barrack in pairs(nBarracks) do
+        if J.IsValid(barrack) and J.CanBeAttacked(barrack) then
+            if string.find(barrack:GetUnitName(), 'melee') then
                 bot:Action_AttackUnit(barrack, true)
                 return
             end
-        end
-        for _, barrack in pairs(nBarracks) do
-            if J.IsValid(barrack) and string.find(barrack:GetUnitName(), 'range') then
+            if #nBarracks == 1 then
                 bot:Action_AttackUnit(barrack, true)
                 return
             end

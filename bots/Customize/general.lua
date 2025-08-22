@@ -106,6 +106,11 @@ Customize.Fretbots = {
     Player_Death_Sound = true,
 }
 
+-- Make bots think less, 0: fully think through, 1 to 10: think less and less frequently.
+-- You can improve PC performance (FPS) by setting this to 1 to 10, but it will reduce the bot performance.
+-- Bots can become slow or dumb in reaction and decision making if you set this value to over 1.
+Customize.ThinkLess = 1;
+
 return Customize
 
 

@@ -3,6 +3,8 @@ local botName = bot:GetUnitName();
 if bot == nil or bot:IsInvulnerable() or not bot:IsHero() or not bot:IsAlive() or not string.find(botName, "hero") or bot:IsIllusion() then return end
 
 local J = require(GetScriptDirectory()..'/FunLib/jmz_func')
+local Customize = require(GetScriptDirectory()..'/Customize/general')
+Customize.ThinkLess = Customize.ThinkLess or 1
 
 local botTeam = bot:GetTeam()
 local enemyTeam = botTeam == TEAM_RADIANT and TEAM_DIRE or TEAM_RADIANT
@@ -80,7 +82,7 @@ function OnEnd()
 end
 
 function Think()
-
+	if J.CanNotUseAction(bot) then return end
 	if bot:IsChanneling() 
 		or bot:NumQueuedActions() > 0
 		or bot:IsCastingAbility()
@@ -88,7 +90,7 @@ function Think()
 	then 
 		return
 	end
-	if J.Utils.IsBotThinkingMeaningfulAction(bot) then return end
+	if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "secret_shop") then return end
 
 	if preferedShop == nil then
 		preferedShop = X.GetPreferedSecretShop();

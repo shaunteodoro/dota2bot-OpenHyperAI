@@ -5,7 +5,8 @@ if bot == nil or bot:IsInvulnerable() or not bot:IsHero() or not bot:IsAlive() o
 local Utils = require(GetScriptDirectory()..'/FunLib/utils')
 local EnemyRoles = require(GetScriptDirectory()..'/FunLib/enemy_role_estimation')
 local Localization = require(GetScriptDirectory()..'/FunLib/localization')
-
+local Customize = require(GetScriptDirectory()..'/Customize/general')
+Customize.ThinkLess = Customize.ThinkLess or 1
 local J = require(GetScriptDirectory()..'/FunLib/jmz_func')
 local Item = require(GetScriptDirectory()..'/FunLib/aba_item')
 local Roles = require(GetScriptDirectory()..'/FunLib/aba_role')
@@ -222,7 +223,7 @@ end
 -- ==============================
 function Think()
     if J.CanNotUseAction(bot) then return end
-    if J.Utils.IsBotThinkingMeaningfulAction(bot) then return end
+    if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "team_roam") then return end
 
     ItemOpsThink()
 

@@ -1,4 +1,6 @@
 local J = require( GetScriptDirectory()..'/FunLib/jmz_func')
+local Customize = require( GetScriptDirectory()..'/Customize/general' )
+
 local bot = GetBot()
 local botName = bot:GetUnitName()
 
@@ -38,6 +40,8 @@ local nChainFrostBounceDistance = 600 + 150
 local cachedTombstoneZombieSlowState = 0
 local nInRangeEnemy, nInRangeAlly, allyTowers, enemyTowers, trySeduce, shouldTempRetreat, botTarget, shouldGoBackToFountain, nInCloseRangeEnemy, nInCloseRangeAlly
 
+local tangoDesire, tangoTarget, tangoSlot
+
 local laneAndT1s = {
 	{LANE_TOP, TOWER_TOP_1},
 	{LANE_MID, TOWER_MID_1},
@@ -72,6 +76,11 @@ function GetDesireHelper()
 	-- then
 	-- 	return BOT_ACTION_DESIRE_ABSOLUTE
 	-- end
+
+	tangoDesire, tangoTarget = ConsiderUseTango()
+	if tangoDesire > 0 then
+		return BOT_MODE_DESIRE_ABSOLUTE
+	end
 
 	TinkerShouldWaitInBaseToHeal = TinkerWaitInBaseAndHeal()
 	if TinkerShouldWaitInBaseToHeal
@@ -130,7 +139,7 @@ end
 
 function Think()
     if J.CanNotUseAction(bot) then return end
-	if J.Utils.IsBotThinkingMeaningfulAction(bot) then return end
+	if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "roam") then return end
 
 	nInRangeEnemy = bot:GetNearbyHeroes(1200, true, BOT_MODE_NONE)
 
@@ -140,6 +149,12 @@ function Think()
 end
 
 function ThinkIndividualRoaming()
+	if tangoDesire and tangoDesire > 0 and tangoTarget then
+		local hItem = bot:GetItemInSlot( tangoSlot )
+		bot:Action_UseAbilityOnTree( hItem, tangoTarget )
+		return
+	end
+
 	-- Heal in Base
 	-- Just for TP. Too much back and forth when "forcing" them try to walk to fountain; <- not reliable and misses farm.
 	if ShouldWaitInBaseToHeal
@@ -1101,6 +1116,40 @@ function GetMortimerKissesTarget()
 	return nil
 end
 
+function ConsiderUseTango()
+	if bot:HasModifier('modifier_tango_heal') then return BOT_ACTION_DESIRE_NONE, nil end
+
+	tangoDesire = 0
+	tangoSlot = J.FindItemSlotNotInNonbackpack(bot, "item_tango")
+	if tangoSlot < 0 then
+		tangoSlot = J.FindItemSlotNotInNonbackpack(bot, "item_tango_single")
+	end
+	if tangoSlot >= 0
+	and bot:OriginalGetMaxHealth() - bot:OriginalGetHealth() > 250
+	and J.GetHP(bot) > 0.15
+	and not J.IsAttacking(bot)
+	and not bot:WasRecentlyDamagedByAnyHero(2) then
+		local trees = bot:GetNearbyTrees( 800 )
+		local targetTree = trees[1]
+		local nearEnemyList = J.GetNearbyHeroes(bot, 1000, true, BOT_MODE_NONE )
+		local nearestEnemy = nearEnemyList[1]
+		local nearTowerList = bot:GetNearbyTowers( 1400, true )
+		local nearestTower = nearTowerList[1]
+		if targetTree ~= nil
+		then
+			local targetTreeLoc = GetTreeLocation( targetTree )
+			if IsLocationVisible( targetTreeLoc )
+				and IsLocationPassable( targetTreeLoc )
+				-- and ( #nearEnemyList == 0 or not J.IsInRange( bot, nearestEnemy, 800 ) )
+				and ( #nearEnemyList == 0 or GetUnitToLocationDistance( bot, targetTreeLoc ) * 1.6 < GetUnitToUnitDistance( bot, nearestEnemy ) )
+				and ( #nearTowerList == 0 or GetUnitToLocationDistance( nearestTower, targetTreeLoc ) > 920 )
+			then
+				return BOT_ACTION_DESIRE_HIGH, targetTree
+			end
+		end
+	end
+	return BOT_ACTION_DESIRE_NONE
+end
 
 -- Just for TP. Too much back and forth when "forcing" them try to walk to fountain; <- not reliable and misses farm.
 function ConsiderWaitInBaseToHeal()

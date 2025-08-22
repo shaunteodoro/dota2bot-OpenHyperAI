@@ -1,6 +1,8 @@
 local J = require(GetScriptDirectory()..'/FunLib/jmz_func')
 local okLoc, Localization = pcall(require, GetScriptDirectory()..'/FunLib/localization')
+local Customize = require(GetScriptDirectory()..'/Customize/general')
 if not okLoc then Localization = { Get = function(_) return 'Defend here!' end } end
+Customize.ThinkLess = Customize.ThinkLess or 1
 
 local Defend = {}
 
@@ -86,17 +88,6 @@ local function WeightedEnemiesAroundLocation(vLoc, nRadius)
     count = math.floor(count)
     _cacheEnemyAroundLoc[key] = { t = now, count = count }
     return count
-end
-
--- Grid size for rounding (smaller = less chance of collisions)
-local BUILDING_KEY_GRID = 128
-
-local function _bkey_from_loc(u)
-    local v = u and u:GetLocation()
-    if not v then return '0:0' end
-    local gx = math.floor(v.x / BUILDING_KEY_GRID) * BUILDING_KEY_GRID
-    local gy = math.floor(v.y / BUILDING_KEY_GRID) * BUILDING_KEY_GRID
-    return tostring(gx) .. ':' .. tostring(gy)
 end
 
 local function GetThreatenedLane()
@@ -303,17 +294,7 @@ local function ConsiderPingedDefend(bot, desire, building, tier, nEffAllies, nEn
 end
 
 function Defend.GetDefendDesire(bot, lane)
-    local cacheKey = ('DefendDesire:%d:%d'):format(bot:GetPlayerID(), lane or -1)
-    local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.6)
-    if cachedVar ~= nil then return cachedVar end
-	local res = Defend.GetDefendDesireHelper(bot, lane)
-	J.Utils.SetCachedVars(cacheKey, res)
-	bot.defendDesire = res
-	return res
-end
-
-function Defend.GetDefendDesireHelper(bot, lane)
-    if bot:IsIllusion() then return BOT_MODE_DESIRE_NONE end
+	if bot:IsInvulnerable() or not bot:IsHero() or not bot:IsAlive() or not string.find(bot:GetUnitName(), "hero") or bot:IsIllusion() then return BOT_MODE_DESIRE_NONE end
     if bot.laneToDefend == nil then bot.laneToDefend = lane end
     if bot.DefendLaneDesire == nil then bot.DefendLaneDesire = {0,0,0} end
 
@@ -376,7 +357,7 @@ function Defend.GetDefendDesireHelper(bot, lane)
         local isPinged, pingedLane = J.IsPingCloseToValidTower(team, humanPing, 700, 5.0)
         if isPinged and lane == pingedLane and GameTime() < humanPing.time + PING_DELTA then
             bot.laneToDefend = lane
-            return 0.9
+            return RemapValClamped(J.GetHP(bot), 0, 0.5, BOT_MODE_DESIRE_NONE, 0.95)
         end
     end
 
@@ -464,13 +445,13 @@ function Defend.GetDefendDesireHelper(bot, lane)
     end
 
     bot.laneToDefend = lane
-    return nDefendDesire
+    return RemapValClamped(J.GetHP(bot), 0, 0.7, BOT_MODE_DESIRE_NONE, nDefendDesire)
 end
 
 -- == ACTION LOOP ==
 function Defend.DefendThink(bot, lane)
     if J.CanNotUseAction(bot) then return end
-
+    if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "defend") then return end
     -- Base-defense leash: anchor near Ancient, don't drift out
     if IsBaseThreatActive() then
         local ancient = GetAncient(nTeam)

@@ -11,6 +11,8 @@ local J = require( GetScriptDirectory()..'/FunLib/jmz_func' )
 local Utils = require( GetScriptDirectory()..'/FunLib/utils' )
 local BotBuild = dofile( GetScriptDirectory().."/BotLib/"..string.gsub( botName, "npc_dota_", "" ) )
 local Localization = require( GetScriptDirectory()..'/FunLib/localization' )
+local Customize = require(GetScriptDirectory()..'/Customize/general')
+Customize.ThinkLess = Customize.ThinkLess or 1
 
 if BotBuild == nil then return end
 
@@ -7714,7 +7716,7 @@ end
 function ItemUsageThink()
 	if bot:IsInvulnerable() or not bot:IsHero() or not bot:IsAlive() or not string.find(botName, "hero") or bot:IsIllusion() then return end
 	if bot.lastItemFrameProcessTime == nil then bot.lastItemFrameProcessTime = DotaTime() end
-	if DotaTime() - bot.lastItemFrameProcessTime < bot.frameProcessTime then return end
+	if DotaTime() - bot.lastItemFrameProcessTime < bot.frameProcessTime * Customize.ThinkLess then return end
 	bot.lastItemFrameProcessTime = DotaTime()
 	if not J.IsNoItemIllution(bot) then ItemUsageComplement() end
 end
@@ -7722,7 +7724,7 @@ end
 function AbilityUsageThink()
 	if bot:IsInvulnerable() or not bot:IsHero() or not bot:IsAlive() or not string.find(botName, "hero") or bot:IsIllusion() then return end
 	if bot.lastAbilityFrameProcessTime == nil then bot.lastAbilityFrameProcessTime = DotaTime() end
-	if DotaTime() - bot.lastAbilityFrameProcessTime < bot.frameProcessTime and bot.isBear == nil then return end
+	if (DotaTime() - bot.lastAbilityFrameProcessTime < bot.frameProcessTime * Customize.ThinkLess) and bot.isBear == nil then return end
 	bot.lastAbilityFrameProcessTime = DotaTime()
 	if not J.IsNoAbilityIllution(bot) then BotBuild.SkillsComplement() end
 end

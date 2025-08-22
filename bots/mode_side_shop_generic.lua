@@ -3,6 +3,7 @@ local X = {}
 local bot = GetBot()
 local J = require( GetScriptDirectory()..'/FunLib/jmz_func' )
 local Localization = require( GetScriptDirectory()..'/FunLib/localization' )
+local Customize = require( GetScriptDirectory()..'/Customize/general' )
 
 local Tormentor = nil
 local TormentorLocation = 0
@@ -31,6 +32,12 @@ function GetDesireHelper()
     if DotaTime() > 300 and DotaTime() - bot.tormentor_kill_time <= nRestForSeconds then
 		return BOT_MODE_DESIRE_VERYHIGH
     end
+
+    J.Utils['GameStates'] = J.Utils['GameStates'] or {}
+    J.Utils['GameStates']['defendPings'] = J.Utils['GameStates']['defendPings'] or { pingedTime = GameTime() }
+    if GameTime() - J.Utils['GameStates']['defendPings'].pingedTime <= 5.0 then
+		return BOT_MODE_DESIRE_NONE
+	end
 
     TormentorLocation = J.GetTormentorLocation(GetTeam())
     vWaitingLocation = J.GetTormentorWaitingLocation(GetTeam())
@@ -266,7 +273,7 @@ local fStillAlive = 0
 local bTormentorAlive = false
 function Think()
     if J.CanNotUseAction(bot) then return end
-
+    if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "side_shop") then return end
     if DotaTime() - bot.tormentor_kill_time <= nRestForSeconds then
         bot:Action_MoveToLocation(TormentorLocation + RandomVector(50))
         return

@@ -7,6 +7,8 @@ local X = {}
 local bot = GetBot()
 local J = require(GetScriptDirectory()..'/FunLib/jmz_func')
 local W = require(GetScriptDirectory() ..'/FunLib/aba_ward_utility')
+local Customize = require(GetScriptDirectory()..'/Customize/general')
+Customize.ThinkLess = Customize.ThinkLess or 1
 
 local nObserverWardCastRange = 500
 local nSentryWardCastRange = 500
@@ -87,7 +89,7 @@ end
 
 function Think()
 	if J.CanNotUseAction(bot) then return end
-
+	if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "ward") then return end
 	if hTargetSpot then
 		if ObserverWard and J.CanCastAbility(ObserverWard) then
 			if GetUnitToLocationDistance(bot, hTargetSpot.location) <= nObserverWardCastRange then

@@ -2,7 +2,7 @@ require( GetScriptDirectory()..'/FunLib/aba_global_overrides' )
 
 local X = {}
 local sSelectHero = "npc_dota_hero_zuus"
-local fLastSlectTime, fLastRand = 5, 0
+local fLastSlectTime, fLastRand = -100, 0
 local nDelayTime = nil
 local sBanList = {}
 local sSelectList = {}
@@ -11,7 +11,6 @@ local tLaneAssignList = {}
 local bLineupReserve = false
 local matchups = require( GetScriptDirectory()..'/FretBots/matchups_data' )
 
-local MU = require( GetScriptDirectory()..'/FunLib/aba_matchups' )
 local Role = require( GetScriptDirectory()..'/FunLib/aba_role' )
 local Utils = require( GetScriptDirectory()..'/FunLib/utils' )
 local Dota2Teams = require( GetScriptDirectory()..'/FunLib/aba_team_names' )
@@ -734,7 +733,7 @@ function Think()
 			if GetGameMode() ~= 23 then return end
 		end
 
-		if nDelayTime == nil then nDelayTime = GameTime() fLastRand = RandomInt( 12, 34 )/10 end
+		if nDelayTime == nil then nDelayTime = GameTime() fLastRand = RandomInt( 20, 35 )/10 end
 		if nDelayTime ~= nil and nDelayTime > GameTime() - fLastRand then return end
 
 		AllPickHeros()

@@ -1998,12 +1998,19 @@ const meaningfulActivities = [
  * Checks if the bot is currently thinking meaningful actions that would make
  * re-computing the Think() method unnecessary.
  * @param {Unit} bot - The bot unit to check
+ * @param {number} thinkLess - The think less value, 0: fully think, 1 to 10: think less and less frequently.
+ * @param {string} type - The type of action to check, "all": check all actions, "farm": check farm actions, etc.
  * @returns {boolean} True if the bot is doing something meaningful, false otherwise
  */
-export function IsBotThinkingMeaningfulAction(bot: Unit): boolean {
-    return false; // TODO: remove this when we have a better way to check if the bot is thinking meaningful actions
-    const cacheKey = "IsBotThinkingMeaningfulAction" + bot.GetPlayerID();
-    const cachedRes = GetCachedVars(cacheKey, 0.2);
+export function IsBotThinkingMeaningfulAction(bot: Unit, thinkLess: number = 1, type: string = "all"): boolean {
+    // return false; // TODO: remove this when we have a better way to check if the bot is thinking meaningful actions
+    if (thinkLess < 0) {
+        thinkLess = 0;
+    } else if (thinkLess > 10) {
+        thinkLess = 10;
+    }
+    const cacheKey = "IsBotThinkingMeaningfulAction" + bot.GetPlayerID() + "_" + type;
+    const cachedRes = GetCachedVars(cacheKey, 0.1 * thinkLess);
     if (!cachedRes) {
         // if no cached result, return false to re-compute for actions
         return false;

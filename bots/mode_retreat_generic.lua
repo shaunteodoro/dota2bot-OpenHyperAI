@@ -451,9 +451,9 @@ end
 
 -- from mode_farm_generic
 function X.ShouldRun()
-	if J.GetModifierTime(bot, 'modifier_medusa_stone_gaze_facing') > 3.33 then
-		return 3.33
-	end
+	-- if J.GetModifierTime(bot, 'modifier_medusa_stone_gaze_facing') > 3.33 then
+	-- 	return 3.33
+	-- end
 
     for _, enemyHero in pairs(nEnemyHeroes) do
         if J.IsValidHero(enemyHero)
@@ -480,31 +480,31 @@ function X.ShouldRun()
 		return 2
 	end
 
-    local botAssignedLane = bot:GetAssignedLane()
-	if botLevel <= 4 and nDistanceFromEnemyFountain < 8000 then
-		if (botAssignedLane == LANE_TOP and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 10800 or 8100))
-		or (botAssignedLane == LANE_MID and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 8100 or 8000))
-		or (botAssignedLane == LANE_BOT and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 8200 or 10800))
-		then
-            return 3.33
-		end
-	end
+    -- local botAssignedLane = bot:GetAssignedLane()
+	-- if botLevel <= 4 and nDistanceFromEnemyFountain < 8000 then
+	-- 	if (botAssignedLane == LANE_TOP and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 10800 or 8100))
+	-- 	or (botAssignedLane == LANE_MID and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 8100 or 8000))
+	-- 	or (botAssignedLane == LANE_BOT and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 8200 or 10800))
+	-- 	then
+    --         return 3.33
+	-- 	end
+	-- end
 
-	if botLevel < 6 and DotaTime() > 30 and J.IsEarlyGame() then
-		if (botAssignedLane == LANE_TOP and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 12000 or 9000))
-		or (botAssignedLane == LANE_MID and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 9000 or 8000))
-		or (botAssignedLane == LANE_BOT and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 9000 or 12000))
-		then
-			if J.IsValidHero(botTarget)
-			and not J.IsSuspiciousIllusion(botTarget)
-            and J.GetHP(botTarget) > 0.35
-            and (not J.IsInRange(bot,botTarget,bot:GetAttackRange() + 150)
-                or not J.CanKillTarget(botTarget, bot:GetAttackDamage() * 2.33, DAMAGE_TYPE_PHYSICAL))
-			then
-				return 2.88
-			end
-		end
-	end
+	-- if botLevel < 6 and DotaTime() > 30 and J.IsEarlyGame() then
+	-- 	if (botAssignedLane == LANE_TOP and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 12000 or 9000))
+	-- 	or (botAssignedLane == LANE_MID and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 9000 or 8000))
+	-- 	or (botAssignedLane == LANE_BOT and nDistanceFromEnemyFountain < (GetTeam() == TEAM_RADIANT and 9000 or 12000))
+	-- 	then
+	-- 		if J.IsValidHero(botTarget)
+	-- 		and not J.IsSuspiciousIllusion(botTarget)
+    --         and J.GetHP(botTarget) > 0.35
+    --         and (not J.IsInRange(bot,botTarget,bot:GetAttackRange() + 150)
+    --             or not J.CanKillTarget(botTarget, bot:GetAttackDamage() * 2.33, DAMAGE_TYPE_PHYSICAL))
+	-- 		then
+	-- 			return 2.88
+	-- 		end
+	-- 	end
+	-- end
 
 	if botLevel < 10
     and bot:GetAttackDamage() < 133

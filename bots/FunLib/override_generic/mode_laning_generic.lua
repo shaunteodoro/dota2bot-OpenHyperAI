@@ -110,6 +110,8 @@ function X.Think()
 end
 
 function ConsiderTango()
+	if bot:HasModifier('modifier_tango_heal') then return BOT_ACTION_DESIRE_NONE, nil end
+
 	tangoDesire = 0
 	tangoSlot = J.FindItemSlotNotInNonbackpack(bot, "item_tango")
 	if tangoSlot < 0 then
@@ -119,8 +121,7 @@ function ConsiderTango()
 	and bot:OriginalGetMaxHealth() - bot:OriginalGetHealth() > 250
 	and J.GetHP(bot) > 0.15
 	and not J.IsAttacking(bot)
-	and not bot:WasRecentlyDamagedByAnyHero(2)
-	and not bot:HasModifier('modifier_tango_heal') then
+	and not bot:WasRecentlyDamagedByAnyHero(2) then
 		local trees = bot:GetNearbyTrees( 800 )
 		local targetTree = trees[1]
 		local nearEnemyList = J.GetNearbyHeroes(bot, 1000, true, BOT_MODE_NONE )

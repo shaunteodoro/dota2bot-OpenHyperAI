@@ -1,6 +1,7 @@
 local X = {}
 local J = require(GetScriptDirectory()..'/FunLib/jmz_func')
-
+local Customize = require(GetScriptDirectory()..'/Customize/general')
+Customize.ThinkLess = Customize.ThinkLess or 1
 local bot = GetBot()
 
 local MAX_DIST = 1600
@@ -216,6 +217,8 @@ function OnEnd()
 end
 
 function Think()
+	if J.CanNotUseAction(bot) then return end
+	if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "rune") then return end
     if bot:IsInvulnerable()
     and J.GetHP(bot) > 0.95
     and bot:DistanceFromFountain() < 100 then

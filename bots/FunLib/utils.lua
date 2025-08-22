@@ -2193,8 +2193,51 @@ local meaningfulActivities = {
 -- re-computing the Think() method unnecessary.
 -- 
 -- @param bot - The bot unit to check
+-- @param thinkLess - The think less value, 0: fully think, 1 to 10: think less and less frequently.
+-- @param type - The type of action to check, "all": check all actions, "farm": check farm actions, etc.
 -- @returns True if the bot is doing something meaningful, false otherwise
-function ____exports.IsBotThinkingMeaningfulAction(bot)
+function ____exports.IsBotThinkingMeaningfulAction(bot, thinkLess, ____type)
+    if thinkLess == nil then
+        thinkLess = 1
+    end
+    if ____type == nil then
+        ____type = "all"
+    end
+    if thinkLess < 0 then
+        thinkLess = 0
+    elseif thinkLess > 10 then
+        thinkLess = 10
+    end
+    local cacheKey = (("IsBotThinkingMeaningfulAction" .. tostring(bot:GetPlayerID())) .. "_") .. ____type
+    local cachedRes = ____exports.GetCachedVars(cacheKey, 0.1 * thinkLess)
+    if not cachedRes then
+        return false
+    end
+    do
+        local ____try, ____hasReturned, ____returnValue = pcall(function()
+            if __TS__ArrayIncludes(
+                meaningfulActivities,
+                bot:GetAnimActivity()
+            ) then
+                ____exports.SetCachedVars(cacheKey, true)
+                return true, true
+            end
+        end)
+        if ____try and ____hasReturned then
+            return ____returnValue
+        end
+    end
+    local numQueuedActions = bot:NumQueuedActions()
+    if numQueuedActions > 0 then
+        for index = 1, numQueuedActions do
+            local actionType = bot:GetQueuedActionType(index)
+            if actionType ~= BotActionType.None then
+                ____exports.SetCachedVars(cacheKey, true)
+                return true
+            end
+        end
+    end
+    ____exports.SetCachedVars(cacheKey, false)
     return false
 end
 return ____exports
