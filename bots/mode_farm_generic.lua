@@ -429,7 +429,6 @@ end
 function Think()
 	if J.CanNotUseAction(bot) then return end
 	if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "farm") then return end
-
 	if runMode
 	then
 		if not bot:IsInvisible() and bot:GetLevel() >= 15
@@ -439,8 +438,6 @@ function Think()
 			if botAttackRange > 1400 then botAttackRange = 1400 end;
 			local runModeAllies = bot:GetNearbyHeroes(900,false,BOT_MODE_NONE);
 			local runModeEnemyHeroes = bot:GetNearbyHeroes(botAttackRange +50,true,BOT_MODE_NONE);
-			local runModeTowers  = bot:GetNearbyTowers(240,true);
-			local runModeBarracks  = bot:GetNearbyBarracks(botAttackRange +150,true);
 			if J.IsValid(runModeEnemyHeroes[1])
 				and #runModeAllies >= 2
 				and not runModeEnemyHeroes[1]:IsAttackImmune()
@@ -450,6 +447,7 @@ function Think()
 				bot:Action_AttackUnit(runModeEnemyHeroes[1], true);
 				return;
 			end
+			local runModeBarracks  = bot:GetNearbyBarracks(botAttackRange +150,true);
 			if J.IsValid(runModeBarracks[1])
 				and not bot:WasRecentlyDamagedByAnyHero(1.0)
 				and not runModeBarracks[1]:IsAttackImmune()
@@ -462,13 +460,37 @@ function Think()
 				return;
 			end
 		end
+		if J.IsInAllyArea(bot) or J.GetDistanceFromEnemyFountain(bot) < 2600
+		then
+			if bot:GetTeam() == TEAM_RADIANT
+			then
+				bot:Action_MoveToLocation(RB);
+				return;
+			else
+				bot:Action_MoveToLocation(DB);
+				return;
+			end
+		else
+			if bot:GetTeam() == TEAM_RADIANT
+			then
+			    local mLoc = J.GetLocationTowardDistanceLocation(bot,DB,-700);
+				bot:Action_MoveToLocation(mLoc);
+				return;
+			else
+			    local mLoc = J.GetLocationTowardDistanceLocation(bot,RB,-700);
+				bot:Action_MoveToLocation(mLoc);
+				return;
+			end
+		end
 	end
 
-	hLaneCreepList = bot:GetNearbyLaneCreeps(900, true)
-	if J.IsValid(hLaneCreepList[1]) then
+	if hLaneCreepList == nil then
+		hLaneCreepList = bot:GetNearbyLaneCreeps(900, true)
+	end
+	if hLaneCreepList ~= nil and #hLaneCreepList > 0 and J.IsValid(hLaneCreepList[1]) then
 		local farmTarget = J.Site.GetFarmLaneTarget(hLaneCreepList);
 		local nSearchRange = bot:GetAttackRange() + 180
-		if nSearchRange > 900 then nSearchRange = 900 end
+		if nSearchRange > 1600 then nSearchRange = 1600 end
 		local nNeutrals = bot:GetNearbyNeutralCreeps(nSearchRange);
 		if J.IsValid(farmTarget) and #nNeutrals == 0 then
 			if farmTarget:GetTeam() ~= bot:GetTeam() then

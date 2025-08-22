@@ -4,7 +4,7 @@ if bot == nil or bot:IsInvulnerable() or not bot:IsHero() or not bot:IsAlive() o
 
 local J = require(GetScriptDirectory()..'/FunLib/jmz_func')
 local Customize = require(GetScriptDirectory()..'/Customize/general')
-Customize.ThinkLess = Customize.ThinkLess or 1
+Customize.ThinkLess = Customize.Enable and Customize.ThinkLess or 1
 
 local botTeam = bot:GetTeam()
 local enemyTeam = botTeam == TEAM_RADIANT and TEAM_DIRE or TEAM_RADIANT
@@ -16,7 +16,7 @@ local hasItemToSell = false;
 
 function GetDesire()
 	local cacheKey = 'GetSecretShopDesire'..tostring(bot:GetPlayerID())
-	local cachedVar = J.Utils.GetCachedVars(cacheKey, 1)
+	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.5 * (1 + Customize.ThinkLess))
 	if cachedVar ~= nil then return cachedVar end
 	local res = GetDesireHelper()
 	J.Utils.SetCachedVars(cacheKey, res)
@@ -26,6 +26,10 @@ function GetDesireHelper()
 
 	-- 如果在打高地 就别撤退去干别的
 	if J.Utils.IsTeamPushingSecondTierOrHighGround(bot) then
+		return BOT_MODE_DESIRE_NONE
+	end
+
+	if J.IsFarming(bot) and J.IsPushing(bot) and J.IsDefending(bot) then
 		return BOT_MODE_DESIRE_NONE
 	end
 

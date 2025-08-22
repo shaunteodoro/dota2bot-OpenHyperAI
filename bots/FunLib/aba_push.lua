@@ -1,7 +1,7 @@
 local Push = {}
 local J = require( GetScriptDirectory()..'/FunLib/jmz_func')
 local Customize = require(GetScriptDirectory()..'/Customize/general')
-Customize.ThinkLess = Customize.ThinkLess or 1
+Customize.ThinkLess = Customize.Enable and Customize.ThinkLess or 1
 local pingTimeDelta = 5
 local StartToPushTime = 16 * 60 -- after x mins, start considering to push.
 local weAreStronger = false
@@ -373,18 +373,6 @@ function Push.PushThink(bot, lane)
         end
     end
 
-    if GetUnitToUnitDistance(bot, hEnemyAncient) <= 3200
-    and (   GetTower(GetOpposingTeam(), TOWER_TOP_2) == nil
-        and GetTower(GetOpposingTeam(), TOWER_MID_2) == nil
-        and GetTower(GetOpposingTeam(), TOWER_BOT_2) == nil)
-    then
-        local hBuildingTarget = TryClearingOtherLaneHighGround(bot, targetLoc)
-        if hBuildingTarget then
-            bot:Action_AttackUnit(hBuildingTarget, true)
-            return
-        end
-    end
-
     nInRangeAlly = J.GetAlliesNearLoc(hEnemyAncient:GetLocation(), 1600)
     if GetUnitToUnitDistance(bot, hEnemyAncient) < 1600
     and J.CanBeAttacked(hEnemyAncient)
@@ -474,6 +462,18 @@ function Push.PushThink(bot, lane)
 
         if hTowerFillerTarget then
             bot:Action_AttackUnit(hTowerFillerTarget, true)
+            return
+        end
+    end
+
+    if GetUnitToUnitDistance(bot, hEnemyAncient) <= 3200
+    and (   GetTower(GetOpposingTeam(), TOWER_TOP_2) == nil
+        and GetTower(GetOpposingTeam(), TOWER_MID_2) == nil
+        and GetTower(GetOpposingTeam(), TOWER_BOT_2) == nil)
+    then
+        local hBuildingTarget = TryClearingOtherLaneHighGround(bot, targetLoc)
+        if hBuildingTarget then
+            bot:Action_AttackUnit(hBuildingTarget, true)
             return
         end
     end

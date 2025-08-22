@@ -6,7 +6,7 @@ local Utils = require(GetScriptDirectory()..'/FunLib/utils')
 local EnemyRoles = require(GetScriptDirectory()..'/FunLib/enemy_role_estimation')
 local Localization = require(GetScriptDirectory()..'/FunLib/localization')
 local Customize = require(GetScriptDirectory()..'/Customize/general')
-Customize.ThinkLess = Customize.ThinkLess or 1
+Customize.ThinkLess = Customize.Enable and Customize.ThinkLess or 1
 local J = require(GetScriptDirectory()..'/FunLib/jmz_func')
 local Item = require(GetScriptDirectory()..'/FunLib/aba_item')
 local Roles = require(GetScriptDirectory()..'/FunLib/aba_role')
@@ -44,10 +44,15 @@ local lastCheckBotToDropTime = 0
 
 local IsAvoidingAbilityZone = false
 
--- ==============================
--- Desire
--- ==============================
 function GetDesire()
+    local cacheKey = 'GetTeamRoamDesire'..tostring(bot:GetPlayerID())
+    local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.35 * (1 + Customize.ThinkLess))
+    if cachedVar ~= nil then return cachedVar end
+    local res = GetDesireHelper()
+    J.Utils.SetCachedVars(cacheKey, res)
+    return res
+end
+function GetDesireHelper()
     if bot:IsInvulnerable() or not bot:IsHero() or not bot:IsAlive() or not string.find(botName, "hero") or bot:IsIllusion() then
         return BOT_MODE_DESIRE_NONE
     end
@@ -112,7 +117,7 @@ function GetDesire()
         return RemapValClamped(J.GetHP(bot), 0.3, 1, BOT_ACTION_DESIRE_VERYHIGH, BOT_ACTION_DESIRE_NONE)
     end
 
-    if  not J.IsFarming(bot) and not J.IsPushing(bot) and not J.IsDefending(bot)
+    if not J.IsFarming(bot) and not J.IsPushing(bot) and not J.IsDefending(bot)
     and not J.IsDoingRoshan(bot) and not J.IsDoingTormentor(bot)
     and bot:GetActiveMode() ~= BOT_MODE_RUNE
     and bot:GetActiveMode() ~= BOT_MODE_SECRET_SHOP
@@ -128,7 +133,7 @@ function GetDesire()
             if botTarget ~= nil then
                 targetUnit = botTarget
                 bot:SetTarget(botTarget)
-                return RemapValClamped(J.GetHP(bot), 0, 0.6, BOT_MODE_DESIRE_NONE, targetDesire)
+                return RemapValClamped(J.GetHP(bot), 0, 0.4, BOT_MODE_DESIRE_NONE, targetDesire)
             end
         end
         if IsSupport then
@@ -136,13 +141,13 @@ function GetDesire()
             if botTarget ~= nil then
                 targetUnit = botTarget
                 bot:SetTarget(botTarget)
-                return RemapValClamped(J.GetHP(bot), 0, 0.6, BOT_MODE_DESIRE_NONE, targetDesire)
+                return RemapValClamped(J.GetHP(bot), 0, 0.4, BOT_MODE_DESIRE_NONE, targetDesire)
             end
         end
 
         if bot:IsAlive() and bot:DistanceFromFountain() > 4600 then
             if towerTime ~= 0 and X.IsValid(towerCreep) and DotaTime() < towerTime + towerCreepTime then
-                return RemapValClamped(J.GetHP(bot), 0, 0.6, BOT_MODE_DESIRE_NONE, 0.9)
+                return RemapValClamped(J.GetHP(bot), 0, 0.4, BOT_MODE_DESIRE_NONE, 0.9)
             else
                 towerTime, towerCreepMode = 0, false
             end
@@ -154,7 +159,7 @@ function GetDesire()
                     towerCreepMode = true
                 end
                 bot:SetTarget(towerCreep)
-                return RemapValClamped(J.GetHP(bot), 0, 0.6, BOT_MODE_DESIRE_NONE, 0.9)
+                return RemapValClamped(J.GetHP(bot), 0, 0.4, BOT_MODE_DESIRE_NONE, 0.9)
             end
         end
     end
@@ -223,7 +228,8 @@ end
 -- ==============================
 function Think()
     if J.CanNotUseAction(bot) then return end
-    if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "team_roam") then return end
+	-- diabled think less to avoid failing to last hit
+    -- if J.Utils.IsBotThinkingMeaningfulAction(bot, Customize.ThinkLess, "team_roam") then return end
 
     ItemOpsThink()
 

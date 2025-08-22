@@ -118,7 +118,7 @@ function GetPositionedPool(heroPosMap, position)
     local sortedHeroNames = {}
     for _, hero in ipairs(heroList) do
 		local name = hero.name
-		print('[Pool setup] Picking for position: '.. tostring(position) .. ", checking role for hero: "..name)
+		-- print('[Pool setup] Picking for position: '.. tostring(position) .. ", checking role for hero: "..name)
 		if countDurableHeroes[position] == nil then countDurableHeroes[position] = 0 end
 		if (position == 1 and ShouldPickDurableOrOtherCores(name, position, 6))
 		or (position == 2 and ShouldPickDurableOrOtherCores(name, position, 6))
@@ -126,7 +126,7 @@ function GetPositionedPool(heroPosMap, position)
 		or (position == 4 and Role.IsSupport(name) and ShouldPickDurableOrOtherSupports(name, position, 4))
 		or (position == 5 and Role.IsSupport(name) and (Role.IsRanged(name) or hero.weight >= 60) and (Role.IsDisabler(name) or Role.IsHealer(name) or Role.IsInitiator(name)))
 		then
-			print("[Pool setup] Selected hero: " ..name .. " as an option for position: ".. tostring(position))
+			-- print("[Pool setup] Selected hero: " ..name .. " as an option for position: ".. tostring(position))
 			table.insert(sortedHeroNames, name)
 			countDurableHeroes[position] = countDurableHeroes[position] + 1
 			-- Only return top k (ROLE_LIST_TOP_K_LIMIT) results.
@@ -138,8 +138,8 @@ function GetPositionedPool(heroPosMap, position)
 	if #sortedHeroNames < 6 then -- in case all selections is unavailable or have been picked.
 		sortedHeroNames = Utils.CombineTablesUnique(sortedHeroNames, GetPositionedPool(heroPosMap, position))
 	end
-	print("[Pool setup] For position: " .. position .. ", pool size count: ".. #sortedHeroNames)
-	Utils.PrintTable(sortedHeroNames)
+	-- print("[Pool setup] For position: " .. position .. ", pool size count: ".. #sortedHeroNames)
+	-- Utils.PrintTable(sortedHeroNames)
     return sortedHeroNames
 end
 
@@ -519,6 +519,13 @@ function AllPickHeros()
 				-- Sort best->worst and keep the top 3, then add a bit of "fuzz" randomness
 				table.sort(topHeroes, function(a, b) return a.score > b.score end)
 				while #topHeroes > 3 do table.remove(topHeroes) end
+
+				-- print top 3 heroes
+				local team = GetTeamForPlayer(id) == TEAM_RADIANT and 'Radiant' or 'Dire'
+				print('==== top 3 heroes for ' .. 'team: ' .. team .. ' id: ' .. id .. ' ====')
+				for q = 1, #topHeroes do
+					print(q, topHeroes[q].score, topHeroes[q].name)
+				end
 		
 				if #topHeroes >= 1 then
 					local roll = RandomInt(0, 100) / 100.0

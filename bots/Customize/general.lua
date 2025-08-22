@@ -30,6 +30,8 @@ Customize.Localization = "en"
 
 -- To ban some heroes for bots - Set the heroes you DO NOT want the bots to pick. Use hero internal names.
 -- Hero name ref: https://github.com/forest0xia/dota2bot-OpenHyperAI/discussions/71
+-- Please note that it is not 100% guaranteed that the banned hero will not be picked; for example if you banned too many heroes 
+-- like near 100% of the heroes, bots will need to randomly pick heroes regardless of the ban list to continue the game.
 Customize.Ban = {
     'example_npc_dota_hero_internal_name_to_ban',
 }
@@ -99,7 +101,7 @@ Customize.Fretbots = {
     -- Set whether or not allowing the team to vote for difficulty. If false, will directly apply the default difficulty.
     Allow_To_Vote = true,
 
-    -- Set to false disables all sounds
+    -- Set to false disables all sounds from Fretbots mode
     Play_Sounds = true,
 
     -- Set to play chatwheel taunt sounds when human player died
@@ -107,8 +109,9 @@ Customize.Fretbots = {
 }
 
 -- Make bots think less, 0: fully think through, 1 to 10: think less and less frequently.
--- You can improve PC performance (FPS) by setting this to 1 to 10, but it will reduce the bot performance.
--- Bots can become slow or dumb in reaction and decision making if you set this value to over 1.
+-- Bots can become slow or dumb in reaction and decision making if you set this value to a higher number.
+-- When doing Local Host, you can potentially improve PC performance (FPS) by setting this to 1 to 10, which sacrifices some bot IQ/performance.
+-- This won't be very effective for FPS improvement because Valve has a lot of compute on their side that your PC have to handle for Local Hosting.
 Customize.ThinkLess = 1;
 
 return Customize

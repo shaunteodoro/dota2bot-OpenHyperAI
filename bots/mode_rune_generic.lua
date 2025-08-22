@@ -1,7 +1,7 @@
 local X = {}
 local J = require(GetScriptDirectory()..'/FunLib/jmz_func')
 local Customize = require(GetScriptDirectory()..'/Customize/general')
-Customize.ThinkLess = Customize.ThinkLess or 1
+Customize.ThinkLess = Customize.Enable and Customize.ThinkLess or 1
 local bot = GetBot()
 
 local MAX_DIST = 1600
@@ -32,7 +32,7 @@ local timeInMin = 0
 
 function GetDesire()
 	local cacheKey = 'GetRuneDesire'..tostring(bot:GetPlayerID())
-	local cachedVar = J.Utils.GetCachedVars(cacheKey, 1)
+	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.5 * (1 + Customize.ThinkLess))
 	if cachedVar ~= nil then return cachedVar end
 	local res = GetDesireHelper()
 	J.Utils.SetCachedVars(cacheKey, res)
@@ -45,6 +45,11 @@ function GetDesireHelper()
         return 0
     end
 
+    local nInRangeEnemy = J.GetLastSeenEnemiesNearLoc(bot:GetLocation(), 1200)
+    if #nInRangeEnemy > 0 and not J.IsInLaningPhase() then
+        return 0
+    end
+
     botActiveMode = bot:GetActiveMode()
 	bBottle = J.HasItem(bot, 'item_bottle')
 
@@ -52,10 +57,14 @@ function GetDesireHelper()
 	if J.Utils.IsTeamPushingSecondTierOrHighGround(bot) then
 		return BOT_MODE_DESIRE_NONE
 	end
+	if J.IsFarming(bot) and J.IsPushing(bot) and J.IsDefending(bot) then
+		return BOT_MODE_DESIRE_NONE
+	end
 
     if bot:IsInvulnerable() and J.GetHP(bot) > 0.95 and bot:DistanceFromFountain() < 100 then
         return BOT_MODE_DESIRE_ABSOLUTE
     end
+	
 
 	-- Wisdom Rune
 	if bot:GetLevel() < 30 then
@@ -320,7 +329,7 @@ function Think()
 
 			if X.CouldBlink(GetRuneSpawnLocation(ClosestRune)) then return end
 
-			bot:Action_MoveToLocation(GetRuneSpawnLocation(ClosestRune) + RandomVector(25))
+			bot:Action_MoveToLocation(GetRuneSpawnLocation(ClosestRune) + RandomVector(35))
 			return
 		else
 			bot:Action_PickUpRune(ClosestRune)
@@ -335,7 +344,7 @@ function Think()
             return
         end
 
-		bot:Action_MoveToLocation(GetRuneSpawnLocation(ClosestRune))
+		bot:Action_MoveToLocation(GetRuneSpawnLocation(ClosestRune) + RandomVector(50))
 		return
 	end
  end

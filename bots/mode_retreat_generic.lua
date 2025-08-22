@@ -1,6 +1,7 @@
 local X = {}
 
 local J = require( GetScriptDirectory()..'/FunLib/jmz_func')
+local Customize = require( GetScriptDirectory()..'/Customize/general' )
 
 local bot = GetBot()
 
@@ -18,6 +19,14 @@ local fShouldRunTime = 0
 local hTeamAncient, hEnemyAncient
 
 function GetDesire()
+    local cacheKey = 'GetRetreatDesire'..tostring(bot:GetPlayerID())
+    local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.35 * (1 + Customize.ThinkLess))
+    if cachedVar ~= nil then return cachedVar end
+    local res = GetDesireHelper()
+    J.Utils.SetCachedVars(cacheKey, res)
+    return res
+end
+function GetDesireHelper()
     botActiveMode = bot:GetActiveMode()
 
     if not bot:IsAlive()
@@ -88,11 +97,11 @@ function GetDesire()
 		end
 	end
 
-    if J.GetHP(bot) < 0.2 and #nEnemyHeroes >= 2 and bot:WasRecentlyDamagedByAnyHero(1) then
-        return RemapValClamped(J.GetHP(bot), 0.5, 0.1, BOT_MODE_DESIRE_NONE, BOT_MODE_DESIRE_VERYHIGH)
+    if J.GetHP(bot) < 0.3 and #nEnemyHeroes >= 2 and bot:WasRecentlyDamagedByAnyHero(1) then
+        return RemapValClamped(J.GetHP(bot), 0.5, 0, BOT_MODE_DESIRE_HIGH, BOT_MODE_DESIRE_ABSOLUTE)
     end
     if X.LowChanceToRun() then
-        return BOT_MODE_DESIRE_NONE
+        return BOT_MODE_DESIRE_MODERATE
     end
 
     -- Not part of actual retreat
@@ -165,17 +174,17 @@ function GetDesire()
     end
 
     if --[[(botHP <= 0.3) or]] (( botMP < 0.4 ) and bot:DistanceFromFountain() <= 4000 and not bTeamFight) then
-        return RemapValClamped(J.GetHP(bot), 0.9, 0.2, BOT_MODE_DESIRE_MODERATE, BOT_MODE_DESIRE_VERYHIGH)
+        return RemapValClamped(J.GetHP(bot), 0.9, 0.2, BOT_MODE_DESIRE_HIGH, BOT_MODE_DESIRE_VERYHIGH)
     end
 
     if bot:HasModifier('modifier_fountain_aura_buff') then
         if botHP <= 0.9 or (botMP <= 0.8 and botName ~= 'npc_dota_hero_huskar') then
-            return RemapValClamped(J.GetHP(bot), 0.9, 0.5, BOT_MODE_DESIRE_MODERATE, BOT_MODE_DESIRE_ABSOLUTE)
+            return RemapValClamped(J.GetHP(bot), 0.9, 0.5, BOT_MODE_DESIRE_HIGH, BOT_MODE_DESIRE_ABSOLUTE)
         end
 
         if (#nEnemyHeroes > #nAllyHeroes) and not bWeAreStronger and not J.CanBeAttacked(hTeamAncient)
         then
-            return RemapValClamped(J.GetHP(bot), 0.9, 0.5, BOT_MODE_DESIRE_MODERATE, BOT_MODE_DESIRE_HIGH)
+            return RemapValClamped(J.GetHP(bot), 0.9, 0.5, BOT_MODE_DESIRE_HIGH, BOT_MODE_DESIRE_HIGH)
         end
     end
 
@@ -193,7 +202,7 @@ function GetDesire()
         end
 
         if creepDamage / (botHealth + botHealthRegen * 3.0) > 0.15 then
-            return RemapValClamped(J.GetHP(bot), 0.9, 0.5, BOT_MODE_DESIRE_MODERATE, BOT_MODE_DESIRE_VERYHIGH)
+            return RemapValClamped(J.GetHP(bot), 0.9, 0.5, BOT_MODE_DESIRE_HIGH, BOT_MODE_DESIRE_VERYHIGH)
         end
     end
 
@@ -341,14 +350,25 @@ function GetDesire()
     -- nDesire = nDesire + X.GetUnitDesire(1200)
     nDesire = nDesire + X.RetreatWhenTowerTargetedDesire()
 
-    return RemapValClamped(J.GetHP(bot), 1, 0.3, BOT_MODE_DESIRE_NONE, Min(nDesire, 1.0))
+    return Min(nDesire, 1.0)
 end
 
 function X.LowChanceToRun()
 	local nEnemysHeroes = J.GetNearbyHeroes(bot, 900, true, BOT_MODE_NONE )
-    if #nEnemysHeroes >= 3 and #nEnemysHeroes >= #nAllyHeroes and botHP < 0.6
+    if #nEnemysHeroes >= 3 and #nEnemysHeroes >= #nAllyHeroes and botHP < 0.4
     and bot:WasRecentlyDamagedByAnyHero(1) and bot:GetCurrentMovementSpeed() < 330 then
-        return true
+        -- 大概率跑不了了，看看能不能拼死带走一个
+        if J.IsValidHero(botTarget) and J.CanKillTarget(botTarget, bot:GetAttackDamage() * 2.5, DAMAGE_TYPE_PHYSICAL) then
+            return true
+        end
+        for _, enemy in pairs(nEnemysHeroes) do
+            if J.IsValidHero(enemy) and J.CanKillTarget(enemy, bot:GetAttackDamage() * 2.5, DAMAGE_TYPE_PHYSICAL) then
+                if not J.IsValidHero(botTarget) then
+                    bot:SetTarget(enemy)
+                end
+                return true
+            end
+        end
     end
 
     return false

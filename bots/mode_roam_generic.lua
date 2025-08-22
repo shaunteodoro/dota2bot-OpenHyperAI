@@ -50,7 +50,7 @@ local laneAndT1s = {
 
 function GetDesire()
 	local cacheKey = 'GetRoamDesire'..tostring(bot:GetPlayerID())
-	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.6)
+	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.5 * (1 + Customize.ThinkLess))
 	if cachedVar ~= nil then return cachedVar end
 	local res = GetDesireHelper()
 	J.Utils.SetCachedVars(cacheKey, res)
@@ -124,15 +124,15 @@ function GetDesireHelper()
 		end
 	end
 
-	if J.IsValidHero(botTarget)
-	and (J.GetModifierTime(botTarget, 'modifier_dazzle_shallow_grave') > 0.5
-		or J.GetModifierTime(botTarget, 'modifier_oracle_false_promise_timer') > 0.5
-		or botTarget:HasModifier('modifier_skeleton_king_reincarnation_scepter_active'))
-	and J.GetHP(botTarget) < 0.2 and botName ~= "npc_dota_hero_axe"
-	then
-		local nAttackTarget = J.GetAttackableWeakestUnit( bot, bot:GetAttackRange() + 400, true, true )
-		bot:SetTarget( nAttackTarget )
-	end
+	-- if J.IsValidHero(botTarget)
+	-- and (J.GetModifierTime(botTarget, 'modifier_dazzle_shallow_grave') > 0.5
+	-- 	or J.GetModifierTime(botTarget, 'modifier_oracle_false_promise_timer') > 0.5
+	-- 	or botTarget:HasModifier('modifier_skeleton_king_reincarnation_scepter_active'))
+	-- and J.GetHP(botTarget) < 0.2 and botName ~= "npc_dota_hero_axe"
+	-- then
+	-- 	local nAttackTarget = J.GetAttackableWeakestUnit( bot, bot:GetAttackRange() + 400, true, true )
+	-- 	bot:SetTarget( nAttackTarget )
+	-- end
 
 	return BOT_MODE_DESIRE_NONE
 end
@@ -1242,10 +1242,10 @@ function CanBeAffectedByChainFrost()
 end
 
 function ConsiderGeneralRoamingInConditions()
-	if not botTarget then
-		botTarget = J.GetAttackableWeakestUnit( bot, 1500, true, true )
-		bot:SetTarget( botTarget )
-	end
+	-- if not botTarget then
+	-- 	botTarget = J.GetAttackableWeakestUnit( bot, 1500, true, true )
+	-- 	bot:SetTarget( botTarget )
+	-- end
 
 	if bot:HasModifier("modifier_item_mask_of_madness_berserk") then
 		if J.IsValid(botTarget) and J.GetHP(bot) > 0.3 then
@@ -1271,7 +1271,7 @@ function ConsiderGeneralRoamingInConditions()
 		if staticLinkDebuffStack > lastStaticLinkDebuffStack then
 			local enemy = GetTargetEnemy("npc_dota_hero_razor")
 			if enemy ~= nil and J.GetHP(bot) - 0.2 < J.GetHP(enemy) and GetUnitToUnitDistance(bot, enemy) <= 850 then
-				return BOT_ACTION_DESIRE_ABSOLUTE
+				return BOT_ACTION_DESIRE_ABSOLUTE * 1.1
 			end
 		end
 	end
@@ -1479,14 +1479,15 @@ function ConsiderGeneralRoamingInConditions()
 		if #nInRangeEnemy >= 1
 		and #allyTowers >= 1
 		and GetUnitToUnitDistance(allyTowers[1], bot) < 1600
+		and bot:GetActiveModeDesire() < 0.9
 		and #nInRangeAlly <= #nInRangeEnemy then
 			for _, enemy in pairs(nInRangeEnemy) do
 				if J.Utils.IsValidHero(enemy) then
-					if enemy:IsFacingLocation(bot:GetLocation(), 15)
-					and J.IsInRange(bot, enemy, enemy:GetAttackRange() * 1.5 + 350)
+					if enemy:IsFacingLocation(bot:GetLocation(), 45)
+					and J.IsInRange(bot, enemy, enemy:GetAttackRange() * 1.5 + 550)
 					and J.GetHP(enemy) > J.GetHP(bot) - 0.15
-					and bot:WasRecentlyDamagedByAnyHero(3)
-					and J.GetHP(bot) < 0.75 and J.GetHP(bot) > 0.2 -- don't block real retreat action
+					and bot:WasRecentlyDamagedByAnyHero(5)
+					and J.GetHP(bot) < 0.75 and J.GetHP(bot) > 0.3 -- don't block real retreat action
 					then
 						trySeduce = true
 						return BOT_ACTION_DESIRE_VERYHIGH

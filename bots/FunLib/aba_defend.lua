@@ -2,7 +2,7 @@ local J = require(GetScriptDirectory()..'/FunLib/jmz_func')
 local okLoc, Localization = pcall(require, GetScriptDirectory()..'/FunLib/localization')
 local Customize = require(GetScriptDirectory()..'/Customize/general')
 if not okLoc then Localization = { Get = function(_) return 'Defend here!' end } end
-Customize.ThinkLess = Customize.ThinkLess or 1
+Customize.ThinkLess = Customize.Enable and Customize.ThinkLess or 1
 
 local Defend = {}
 
@@ -445,7 +445,7 @@ function Defend.GetDefendDesire(bot, lane)
     end
 
     bot.laneToDefend = lane
-    return RemapValClamped(J.GetHP(bot), 0, 0.7, BOT_MODE_DESIRE_NONE, nDefendDesire)
+    return nDefendDesire
 end
 
 -- == ACTION LOOP ==

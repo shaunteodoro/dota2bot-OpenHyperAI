@@ -22,7 +22,7 @@ local bHumanInTeam = false
 
 function GetDesire()
 	local cacheKey = 'GetSideShopDesire'..tostring(bot:GetPlayerID())
-	local cachedVar = J.Utils.GetCachedVars(cacheKey, 1)
+	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.5 * (1 + Customize.ThinkLess))
 	if cachedVar ~= nil then return cachedVar end
 	local res = GetDesireHelper()
 	J.Utils.SetCachedVars(cacheKey, res)
@@ -39,6 +39,7 @@ function GetDesireHelper()
 		return BOT_MODE_DESIRE_NONE
 	end
 
+    -- update vars for tormentor
     TormentorLocation = J.GetTormentorLocation(GetTeam())
     vWaitingLocation = J.GetTormentorWaitingLocation(GetTeam())
 
@@ -56,7 +57,10 @@ function GetDesireHelper()
     local nAveCoreLevel = 0
     local nAveSuppLevel = 0
 
-    -- update vars
+    local nInRangeEnemy = J.GetLastSeenEnemiesNearLoc(bot:GetLocation(), 1200)
+    if #nInRangeEnemy > 0 and not J.IsInLaningPhase() then
+        return 0
+    end
     local tAliveAllies = {}
     for i = 1, #GetTeamPlayers( GetTeam() ) do
         local member = GetTeamMember(i)

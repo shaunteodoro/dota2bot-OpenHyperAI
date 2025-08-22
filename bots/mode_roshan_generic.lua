@@ -3,6 +3,7 @@ local botName = bot:GetUnitName();
 if bot == nil or bot:IsInvulnerable() or not bot:IsHero() or not bot:IsAlive() or not string.find(botName, "hero") or bot:IsIllusion() then return end
 
 local J = require( GetScriptDirectory()..'/FunLib/jmz_func' )
+local Customize = require( GetScriptDirectory()..'/Customize/general' )
 
 local killTime = 0.0
 local shouldKillRoshan = false
@@ -21,7 +22,7 @@ local Roshan
 
 function GetDesire()
 	local cacheKey = 'GetRoshanDesire'..tostring(bot:GetPlayerID())
-	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.6)
+	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.5 * (1 + Customize.ThinkLess))
 	if cachedVar ~= nil then return cachedVar end
 	local res = GetDesireHelper()
 	J.Utils.SetCachedVars(cacheKey, res)

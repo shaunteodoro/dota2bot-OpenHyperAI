@@ -2010,7 +2010,7 @@ export function IsBotThinkingMeaningfulAction(bot: Unit, thinkLess: number = 1, 
         thinkLess = 10;
     }
     const cacheKey = "IsBotThinkingMeaningfulAction" + bot.GetPlayerID() + "_" + type;
-    const cachedRes = GetCachedVars(cacheKey, 0.1 * thinkLess);
+    const cachedRes = GetCachedVars(cacheKey, 0.15 * thinkLess);
     if (!cachedRes) {
         // if no cached result, return false to re-compute for actions
         return false;

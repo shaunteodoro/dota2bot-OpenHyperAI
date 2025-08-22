@@ -8,7 +8,7 @@ local bot = GetBot()
 local J = require(GetScriptDirectory()..'/FunLib/jmz_func')
 local W = require(GetScriptDirectory() ..'/FunLib/aba_ward_utility')
 local Customize = require(GetScriptDirectory()..'/Customize/general')
-Customize.ThinkLess = Customize.ThinkLess or 1
+Customize.ThinkLess = Customize.Enable and Customize.ThinkLess or 1
 
 local nObserverWardCastRange = 500
 local nSentryWardCastRange = 500
@@ -21,7 +21,7 @@ local fLastWardPlantTime = -math.huge
 
 function GetDesire()
 	local cacheKey = 'GetWardDesire'..tostring(bot:GetPlayerID())
-	local cachedVar = J.Utils.GetCachedVars(cacheKey, 1)
+	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.5 * (1 + Customize.ThinkLess))
 	if cachedVar ~= nil then return cachedVar end
 	local res = GetDesireHelper()
 	J.Utils.SetCachedVars(cacheKey, res)
