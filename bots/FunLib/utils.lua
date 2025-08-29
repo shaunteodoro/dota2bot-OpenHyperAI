@@ -2209,7 +2209,7 @@ function ____exports.IsBotThinkingMeaningfulAction(bot, thinkLess, ____type)
         thinkLess = 10
     end
     local cacheKey = (("IsBotThinkingMeaningfulAction" .. tostring(bot:GetPlayerID())) .. "_") .. ____type
-    local cachedRes = ____exports.GetCachedVars(cacheKey, 0.1 * thinkLess)
+    local cachedRes = ____exports.GetCachedVars(cacheKey, 0.11 * thinkLess)
     if not cachedRes then
         return false
     end

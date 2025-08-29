@@ -305,6 +305,20 @@ function Defend.GetDefendDesire(bot, lane)
     local ancient = GetAncient(team)
 
     defendLoc = GetLaneFrontLocation(team, lane, 0)
+    local distanceToDefendLoc = GetUnitToLocationDistance(bot, defendLoc)
+
+	-- -- 如果不在当前线上，且等级低，不防守
+	local botLevel = bot:GetLevel()
+	if bot:GetAssignedLane() ~= lane
+	and distanceToDefendLoc > 3000
+	and (J.GetPosition(bot) == 1 and botLevel < 6
+	or J.GetPosition(bot) == 2 and botLevel < 6
+	or J.GetPosition(bot) == 3 and botLevel < 5
+	or J.GetPosition(bot) == 4 and botLevel < 4
+	or J.GetPosition(bot) == 5 and botLevel < 4)
+	then
+		return BOT_MODE_DESIRE_NONE
+	end
 
     -- Base threat detection (sticky)
     local enemiesAtAncient = WeightedEnemiesAroundLocation(ancient:GetLocation(), BASE_THREAT_RADIUS)

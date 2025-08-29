@@ -28,10 +28,10 @@ Thanks and kudos to everyone who contributed to making bot games fun and excitin
 
   * [Customize/general.lua](bots/Customize/general.lua) – general settings.
   * [Customize/hero/viper.lua](bots/Customize/hero/viper.lua) – hero-specific settings.
-  * Path depends on install method:
-
-    * **Workshop only**: `<Steam\steamapps\workshop\content\570\3246316298\Customize>`
-    * **Quick-install**: `<Steam\steamapps\common\dota 2 beta\game\dota\scripts\vscripts\game\Customize>`
+  * Customize path depends on your install method:
+    * **Permanent customization**: Move Customize folder to be `<Steam\steamapps\common\dota 2 beta\game\dota\scripts\vscripts\game\Customize>`
+    * **Workshop item (Can get overridden by future script updates)**: Direct customize in `<Steam\steamapps\workshop\content\570\3246316298\Customize>`
+    * You can use the **Permanent customization** option to avoid your custom settings getting replaced/overridden by workshop upgrades.
 * ✅ **Dynamic difficulty (Fretbots mode)** – boosts bots with huge unfair advantages for real challenge.
 * ✅ Supports **most game modes** (see [discussion](https://github.com/forest0xia/dota2bot-OpenHyperAI/discussions/72)).
 * ✅ Improved decision-making: ability casting, items, roaming, farming, defense.
@@ -103,6 +103,10 @@ root: <Steam\steamapps\common\dota 2 beta\game\dota\scripts\vscripts>
 │   └───BotLib: contains the bot item purcahse, ability usage, etc logic for every bots.
 │       │   hero_abaddon.lua
 │       │   ...
+│   │
+│   └───FretBots: contains the configs/utils of the FretBots mode setup
+│   │   │   SettingsDefault.lua: to adjust bonus values
+│   │   │   ...
 │   
 └───typescript: contains the scripts written in typescript (TS) to maintain this project in a more 
 │   │           extendable way since TS supports types and can catch errors in compile time.
@@ -134,7 +138,7 @@ root: <Steam\steamapps\common\dota 2 beta\game\dota\scripts\vscripts>
   * Better support for bugged heroes (Dark Willow, IO, Lone Druid, Muerta, etc.).
   * Full mode support + patch fixes.
 * [Open feature requests](https://github.com/forest0xia/dota2bot-OpenHyperAI/issues?q=is%3Aissue+is%3Aopen+%5BFeature+request%5D)
-
+* [Some feedback to Valve Dota2 bot team](https://www.reddit.com/r/DotA2/comments/1ezxpav/)
 ---
 
 ## Support

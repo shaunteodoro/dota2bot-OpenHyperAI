@@ -42,13 +42,17 @@ function GetDesireHelper()
     if not bot:IsAlive()
 	or (DotaTime() > 2 * 60 and DotaTime() < 6 * 60 and GetUnitToLocationDistance(bot, GetRuneSpawnLocation(RUNE_POWERUP_2)) < 80)
 	then
-        return 0
+        return BOT_MODE_DESIRE_NONE
     end
 
     local nInRangeEnemy = J.GetLastSeenEnemiesNearLoc(bot:GetLocation(), 1200)
     if #nInRangeEnemy > 0 and not J.IsInLaningPhase() then
-        return 0
+        return BOT_MODE_DESIRE_NONE
     end
+	local nInRangeAlly = bot:GetNearbyHeroes(1600, false, BOT_MODE_NONE)
+	if #nInRangeAlly > 0 and not nInRangeAlly[1]:IsBot() then
+		return BOT_MODE_DESIRE_NONE
+	end
 
     botActiveMode = bot:GetActiveMode()
 	bBottle = J.HasItem(bot, 'item_bottle')
