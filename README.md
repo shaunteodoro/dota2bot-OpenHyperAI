@@ -41,7 +41,7 @@ Thanks and kudos to everyone who contributed to making bot games fun and excitin
 
 ---
 
-## How to Install
+## How to Install for Enhance mode
 
 1. Create a **Custom Lobby** → select **Local Host** as **Server Location**.
 2. To enable **Fretbots mode** (harder bots, neutral items, chatbot, etc.), you must **manually install** the script: [Instructions here](https://github.com/forest0xia/dota2bot-OpenHyperAI/discussions/68).
@@ -79,7 +79,8 @@ Thanks and kudos to everyone who contributed to making bot games fun and excitin
 * Contributions welcome on [GitHub](https://github.com/forest0xia/dota2bot-OpenHyperAI).
 * Custom item/skill builds don’t need PRs – just tweak locally.
 * Future development is in **TypeScript** for better maintainability.
-* Project structure (bots, Funlib, Customize, BotLib, typescript, game)：
+* Project structure (bots, Funlib, Customize, BotLib, typescript, game)
+* To develope the script, you need to make sure the script is under this root directory:
 ```
 root: <Steam\steamapps\common\dota 2 beta\game\dota\scripts\vscripts>
 │

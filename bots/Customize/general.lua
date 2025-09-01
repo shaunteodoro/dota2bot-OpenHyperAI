@@ -62,6 +62,18 @@ Customize.Dire_Heros = {
 --]]
 Customize.Allow_Repeated_Heroes = false
 
+-- The max number of weak heroes allowed in a team the bots can pick.
+Customize.Weak_Hero_Cap = 1
+
+-- The weak penalty curve for bots picking weak heroes:
+--   { type="linear", k=0.25 }         ->  penalty = max(0, 1 - k * (weakPicked/cap))
+--   { type="quad",   k=1.0 }          ->  penalty = (1 - min(1, weakPicked/cap))^2
+--   { type="exp",    base=0.6 }       ->  penalty = base^(weakPicked)  (more weak -> smaller)
+Customize.Weak_Penalty = { type = "exp", base = 0.6 }
+
+-- Exact match on unit names by default; set Customize.Strict_Ban_Match = false to allow guarded substring matches (length ≥ 6).
+Customize.Strict_Ban_Match = true
+
 -- To allow bots do trash talking in different scenarios: got fb, killing a human, etc. Disable this also disables GPT chat.
 Customize.Allow_Trash_Talk = true
 
@@ -185,7 +197,6 @@ return Customize
         'npc_dota_hero_phoenix',
         'npc_dota_hero_tinker',
         'npc_dota_hero_pangolier',
-        'npc_dota_hero_furion',
         'npc_dota_hero_tusk',
         'npc_dota_hero_morphling',
         'npc_dota_hero_visage',

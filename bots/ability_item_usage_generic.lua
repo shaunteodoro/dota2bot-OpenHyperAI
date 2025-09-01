@@ -13,6 +13,7 @@ local BotBuild = dofile( GetScriptDirectory().."/BotLib/"..string.gsub( botName,
 local Localization = require( GetScriptDirectory()..'/FunLib/localization' )
 local Customize = require(GetScriptDirectory()..'/Customize/general')
 Customize.ThinkLess = Customize.Enable and Customize.ThinkLess or 1
+if GAMEMODE_TURBO == nil then GAMEMODE_TURBO = 23 end
 
 if BotBuild == nil then return end
 
@@ -237,7 +238,7 @@ function X.SetTalkMessage()
 	local nCurrentGold = bot:GetGold()
 	local nCurrentKills = GetHeroKills( nBotID )
 	local nCurrentDeaths = GetHeroDeaths( nBotID )
-	local nRate = GetGameMode() == 23 and 2.0 or 1.0
+	local nRate = GetGameMode() == GAMEMODE_TURBO and 2.0 or 1.0
 
 	--回复玩家的对话
 	if nBotID == J.Role.GetReplyMemberID()
@@ -650,7 +651,7 @@ end
 
 
 function X.IsCourierTargetedByUnit( courier )
-	if GetGameMode() == 23 then return false end
+	if GetGameMode() == GAMEMODE_TURBO then return false end
 	
 	local botLV = bot:GetLevel()
 

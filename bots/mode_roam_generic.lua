@@ -127,7 +127,8 @@ function GetDesireHelper()
 	-- if J.IsValidHero(botTarget)
 	-- and (J.GetModifierTime(botTarget, 'modifier_dazzle_shallow_grave') > 0.5
 	-- 	or J.GetModifierTime(botTarget, 'modifier_oracle_false_promise_timer') > 0.5
-	-- 	or botTarget:HasModifier('modifier_skeleton_king_reincarnation_scepter_active'))
+	-- 	or botTarget:HasModifier('modifier_skeleton_king_reincarnation_scepter_active')
+	-- 	or botTarget:HasModifier('modifier_item_helm_of_the_undying_active'))
 	-- and J.GetHP(botTarget) < 0.2 and botName ~= "npc_dota_hero_axe"
 	-- then
 	-- 	local nAttackTarget = J.GetAttackableWeakestUnit( bot, bot:GetAttackRange() + 400, true, true )
@@ -778,7 +779,7 @@ function ThinkGeneralRoaming()
 		end
 	end
 
-	if bot:HasModifier("modifier_skeleton_king_reincarnation_scepter_active") then
+	if bot:HasModifier("modifier_skeleton_king_reincarnation_scepter_active") or bot:HasModifier("modifier_item_helm_of_the_undying_active") then
 		local botTarget = J.GetProperTarget(bot)
 		if J.IsValid(botTarget) then
 			if GetUnitToUnitDistance(bot, botTarget) > bot:GetAttackRange() + 200
@@ -1259,7 +1260,10 @@ function ConsiderGeneralRoamingInConditions()
 		end
 	end
 
-	if bot:HasModifier("modifier_skeleton_king_reincarnation_scepter_active") then
+	if bot:HasModifier("modifier_skeleton_king_reincarnation_scepter_active") or bot:HasModifier("modifier_item_helm_of_the_undying_active") then
+		if not J.IsValidHero(botTarget) then
+			botTarget = J.GetAttackableWeakestUnit( bot, 1600, true, true )
+		end
 		if J.IsValidHero(botTarget) then
 			bot:SetTarget( botTarget )
 			return BOT_ACTION_DESIRE_ABSOLUTE * 2

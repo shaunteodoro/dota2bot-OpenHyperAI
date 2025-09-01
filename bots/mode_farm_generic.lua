@@ -951,7 +951,7 @@ function X.ShouldRun(bot)
 				return 3.9;
 			end
 			
-			if nTarget ~= nil and nTarget:IsHero() and aliveEnemyCount > 2
+			if J.IsValidHero(nTarget) and aliveEnemyCount > 2
 			then
 				
 				local assistAlly = false;

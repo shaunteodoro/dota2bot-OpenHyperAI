@@ -809,6 +809,7 @@ function J.IsSuspiciousIllusion( npcTarget )
 		or npcTarget:HasModifier( 'modifier_phantom_lancer_doppelwalk_illusion' )
 		or npcTarget:HasModifier( 'modifier_phantom_lancer_juxtapose_illusion' )
 		or npcTarget:HasModifier( 'modifier_skeleton_king_reincarnation_scepter_active' )
+		or npcTarget:HasModifier( 'modifier_item_helm_of_the_undying_active' )
 		or npcTarget:HasModifier( 'modifier_terrorblade_conjureimage' )
 		then
 			npcTarget.is_suspicious_illusion = true
@@ -3511,6 +3512,7 @@ function J.CannotBeKilled(bot, botTarget)
 		(J.GetModifierTime(botTarget, 'modifier_dazzle_shallow_grave') > 0.6 and J.GetHP(botTarget) < 0.15 and (bot == nil or bot:GetUnitName() ~= "npc_dota_hero_axe"))
 		or J.GetModifierTime(botTarget, 'modifier_oracle_false_promise_timer') > 0.6
 		or botTarget:HasModifier('modifier_skeleton_king_reincarnation_scepter_active')
+		or botTarget:HasModifier('modifier_item_helm_of_the_undying_active')
 		or botTarget:HasModifier('modifier_item_aeon_disk_buff')
 		or botTarget:HasModifier('modifier_abaddon_borrowed_time')
 	)
@@ -4516,6 +4518,7 @@ function J.WeAreStronger(bot, nRadius)
 		and not unit:HasModifier('modifier_necrolyte_reapers_scythe')
 		and not unit:HasModifier('modifier_dazzle_nothl_projection_physical_body_debuff')
 		and not unit:HasModifier('modifier_skeleton_king_reincarnation_scepter_active')
+		and not unit:HasModifier('modifier_item_helm_of_the_undying_active')
 		and not unit:HasModifier('modifier_teleporting')
 		and unit:GetTeam() ~= TEAM_NEUTRAL
 		and unit:GetTeam() ~= TEAM_NONE
