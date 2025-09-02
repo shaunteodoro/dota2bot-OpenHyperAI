@@ -10,79 +10,6 @@ local function __TS__ObjectEntries(obj)
     return result
 end
 
-local __TS__Symbol, Symbol
-do
-    local symbolMetatable = {__tostring = function(self)
-        return ("Symbol(" .. (self.description or "")) .. ")"
-    end}
-    function __TS__Symbol(description)
-        return setmetatable({description = description}, symbolMetatable)
-    end
-    Symbol = {
-        asyncDispose = __TS__Symbol("Symbol.asyncDispose"),
-        dispose = __TS__Symbol("Symbol.dispose"),
-        iterator = __TS__Symbol("Symbol.iterator"),
-        hasInstance = __TS__Symbol("Symbol.hasInstance"),
-        species = __TS__Symbol("Symbol.species"),
-        toStringTag = __TS__Symbol("Symbol.toStringTag")
-    }
-end
-
-local function __TS__ArrayEntries(array)
-    local key = 0
-    return {
-        [Symbol.iterator] = function(self)
-            return self
-        end,
-        next = function(self)
-            local result = {done = array[key + 1] == nil, value = {key, array[key + 1]}}
-            key = key + 1
-            return result
-        end
-    }
-end
-
-local __TS__Iterator
-do
-    local function iteratorGeneratorStep(self)
-        local co = self.____coroutine
-        local status, value = coroutine.resume(co)
-        if not status then
-            error(value, 0)
-        end
-        if coroutine.status(co) == "dead" then
-            return
-        end
-        return true, value
-    end
-    local function iteratorIteratorStep(self)
-        local result = self:next()
-        if result.done then
-            return
-        end
-        return true, result.value
-    end
-    local function iteratorStringStep(self, index)
-        index = index + 1
-        if index > #self then
-            return
-        end
-        return index, string.sub(self, index, index)
-    end
-    function __TS__Iterator(iterable)
-        if type(iterable) == "string" then
-            return iteratorStringStep, iterable, 0
-        elseif iterable.____coroutine ~= nil then
-            return iteratorGeneratorStep, iterable
-        elseif iterable[Symbol.iterator] then
-            local iterator = iterable[Symbol.iterator](iterable)
-            return iteratorIteratorStep, iterator
-        else
-            return ipairs(iterable)
-        end
-    end
-end
-
 local function __TS__NumberToFixed(self, fractionDigits)
     if math.abs(self) >= 1e+21 or self ~= self then
         return tostring(self)
@@ -258,6 +185,65 @@ local function __TS__Delete(target, key)
     end
     target[key] = nil
     return true
+end
+
+local __TS__Symbol, Symbol
+do
+    local symbolMetatable = {__tostring = function(self)
+        return ("Symbol(" .. (self.description or "")) .. ")"
+    end}
+    function __TS__Symbol(description)
+        return setmetatable({description = description}, symbolMetatable)
+    end
+    Symbol = {
+        asyncDispose = __TS__Symbol("Symbol.asyncDispose"),
+        dispose = __TS__Symbol("Symbol.dispose"),
+        iterator = __TS__Symbol("Symbol.iterator"),
+        hasInstance = __TS__Symbol("Symbol.hasInstance"),
+        species = __TS__Symbol("Symbol.species"),
+        toStringTag = __TS__Symbol("Symbol.toStringTag")
+    }
+end
+
+local __TS__Iterator
+do
+    local function iteratorGeneratorStep(self)
+        local co = self.____coroutine
+        local status, value = coroutine.resume(co)
+        if not status then
+            error(value, 0)
+        end
+        if coroutine.status(co) == "dead" then
+            return
+        end
+        return true, value
+    end
+    local function iteratorIteratorStep(self)
+        local result = self:next()
+        if result.done then
+            return
+        end
+        return true, result.value
+    end
+    local function iteratorStringStep(self, index)
+        index = index + 1
+        if index > #self then
+            return
+        end
+        return index, string.sub(self, index, index)
+    end
+    function __TS__Iterator(iterable)
+        if type(iterable) == "string" then
+            return iteratorStringStep, iterable, 0
+        elseif iterable.____coroutine ~= nil then
+            return iteratorGeneratorStep, iterable
+        elseif iterable[Symbol.iterator] then
+            local iterator = iterable[Symbol.iterator](iterable)
+            return iteratorIteratorStep, iterator
+        else
+            return ipairs(iterable)
+        end
+    end
 end
 
 local Set
@@ -549,14 +535,30 @@ local HeroName = ____heroes.HeroName
 -- @param target - The unit to check.
 -- @returns True if the target is a valid unit, false otherwise.
 function ____exports.IsValidUnit(target)
-    return target ~= nil and not target:IsNull() and target:CanBeSeen() and target:IsAlive() and not target:IsInvulnerable()
+    if target == nil then
+        return false
+    end
+    return not target:IsNull() and target:CanBeSeen() and target:IsAlive() and not target:IsInvulnerable()
 end
 --- Check if the target is a valid hero.
 -- 
 -- @param target - The unit to check.
 -- @returns True if the target is a valid hero, false otherwise.
 function ____exports.IsValidHero(target)
+    if target == nil then
+        return false
+    end
     return ____exports.IsValidUnit(target) and target:IsHero()
+end
+--- Check if the target is a valid building.
+-- 
+-- @param target - The unit to check.
+-- @returns True if the target is a valid building, false otherwise.
+function ____exports.IsValidBuilding(target)
+    if target == nil then
+        return false
+    end
+    return ____exports.IsValidUnit(target) and target:IsBuilding()
 end
 --- Get the distance between two locations.
 -- 
@@ -908,17 +910,11 @@ function ____exports.PrintUnitModifiers(unit)
 end
 function ____exports.PrintPings(pingTimeGap)
     local listPings = {}
-    local teamPlayers = GetTeamPlayers(
-        GetTeam(),
-        true
-    )
-    for ____, ____value in __TS__Iterator(__TS__ArrayEntries(teamPlayers)) do
-        local index = ____value[1]
-        local _ = ____value[2]
+    for ____, playerId in ipairs(GetTeamPlayers(GetTeam())) do
         do
             local __continue13
             repeat
-                local allyHero = GetTeamMember(index)
+                local allyHero = GetTeamMember(playerId)
                 if allyHero == nil or allyHero:IsIllusion() then
                     __continue13 = true
                     break
@@ -985,18 +981,18 @@ end
 -- 
 -- @param tbl - The array to shuffle.
 -- @returns The shuffled array.
-function ____exports.Shuffle(tbl)
+function ____exports.Shuffle(a)
     do
-        local i = #tbl - 1
-        while i >= 1 do
-            local j = RandomInt(1, i + 1)
-            local temp = tbl[i + 1]
-            tbl[i + 1] = tbl[j + 1]
-            tbl[j + 1] = temp
+        local i = #a - 1
+        while i > 0 do
+            local j = RandomInt(0, i)
+            local tmp = a[i + 1]
+            a[i + 1] = a[j + 1]
+            a[j + 1] = tmp
             i = i - 1
         end
     end
-    return tbl
+    return a
 end
 function ____exports.SetFrameProcessTime(bot)
     if bot.frameProcessTime == nil then
@@ -1010,11 +1006,8 @@ function ____exports.SetFrameProcessTime(bot)
     end
 end
 function ____exports.GetHumanPing()
-    local teamPlayers = GetTeamPlayers(GetTeam())
-    for ____, ____value in __TS__Iterator(__TS__ArrayEntries(teamPlayers)) do
-        local index = ____value[1]
-        local _ = ____value[2]
-        local teamMember = GetTeamMember(index)
+    for ____, playerId in ipairs(GetTeamPlayers(GetTeam())) do
+        local teamMember = GetTeamMember(playerId)
         if teamMember ~= nil and not teamMember:IsBot() then
             return teamMember, teamMember:GetMostRecentPing()
         end
@@ -1026,22 +1019,19 @@ function ____exports.IsPingedByAnyPlayer(bot, pingTimeGap, minDistance, maxDista
         return nil
     end
     local pings = {}
-    local teamPlayerIds = GetTeamPlayers(GetTeam())
     minDistance = minDistance or 1500
     maxDistance = maxDistance or 10000
-    for ____, ____value in __TS__Iterator(__TS__ArrayEntries(teamPlayerIds)) do
-        local index = ____value[1]
-        local _ = ____value[2]
+    for ____, playerId in ipairs(GetTeamPlayers(GetTeam())) do
         do
             local __continue42
             repeat
-                local teamMember = GetTeamMember(index)
+                local teamMember = GetTeamMember(playerId)
                 if teamMember == nil or teamMember:IsIllusion() or teamMember == bot then
                     __continue42 = true
                     break
                 end
                 local ping = teamMember:GetMostRecentPing()
-                if ping ~= nil then
+                if ping and ping.time and GameTime() - ping.time < pingTimeGap then
                     pings[#pings + 1] = ping
                 end
                 __continue42 = true
@@ -1095,6 +1085,56 @@ function ____exports.CleanupCachedVars()
         end
     end
 end
+function ____exports.CountEnemyHeroesNear(loc, r)
+    local n = 0
+    for ____, u in ipairs(GetUnitList(UnitType.EnemyHeroes)) do
+        if ____exports.IsValidHero(u) and GetUnitToLocationDistance(u, loc) <= r then
+            n = n + 1
+        end
+    end
+    return n
+end
+local BARRACKS = {
+    Barracks.TopMelee,
+    Barracks.TopRanged,
+    Barracks.MidMelee,
+    Barracks.MidRanged,
+    Barracks.BotMelee,
+    Barracks.BotRanged
+}
+local LEVEL_3_TOWERS = {Tower.Top3, Tower.Mid3, Tower.Bot3}
+function ____exports.CountEnemyHeroesOnHighGround(team)
+    local cacheKey = "CountEnemyHeroesOnHighGround:" .. tostring(team or -1)
+    local cachedVar = ____exports.GetCachedVars(cacheKey, 1)
+    if cachedVar ~= nil then
+        return cachedVar
+    end
+    local anchors = {}
+    for ____, t in ipairs(LEVEL_3_TOWERS) do
+        local tw = GetTower(team, t)
+        if ____exports.IsValidBuilding(tw) then
+            anchors[#anchors + 1] = tw
+        end
+    end
+    for ____, b in ipairs(BARRACKS) do
+        local bb = GetBarracks(team, b)
+        if ____exports.IsValidBuilding(bb) then
+            anchors[#anchors + 1] = bb
+        end
+    end
+    local maxSeen = 0
+    for ____, a in ipairs(anchors) do
+        local c = ____exports.CountEnemyHeroesNear(
+            a:GetLocation(),
+            1600
+        )
+        if c > maxSeen then
+            maxSeen = c
+        end
+    end
+    ____exports.SetCachedVars(cacheKey, maxSeen)
+    return maxSeen
+end
 function ____exports.GetDistanceFromAncient(bot, enemy)
     local ancient = GetAncient(enemy and GetOpposingTeam() or GetTeam())
     return GetUnitToUnitDistance(bot, ancient)
@@ -1104,14 +1144,10 @@ end
 -- @param target - The unit to check.
 -- @returns True if the target is a valid creep, false otherwise.
 function ____exports.IsValidCreep(target)
+    if target == nil then
+        return false
+    end
     return ____exports.IsValidUnit(target) and target:GetHealth() < 5000 and not target:IsHero() and (GetBot():GetLevel() > 9 or not target:IsAncientCreep())
-end
---- Check if the target is a valid building.
--- 
--- @param target - The unit to check.
--- @returns True if the target is a valid building, false otherwise.
-function ____exports.IsValidBuilding(target)
-    return ____exports.IsValidUnit(target) and target:IsBuilding()
 end
 --- Check if the bot has the item in its inventory.
 -- 
@@ -1181,13 +1217,16 @@ end
 function ____exports.MergeLists(a, b)
     return __TS__ArrayConcat(a, b)
 end
-function ____exports.RemoveValueFromTable(table_, valueToRemove, removeAll)
-    for index = #table_, 1, -1 do
-        if table_[index] == valueToRemove then
-            __TS__Delete(table_, index)
+function ____exports.RemoveValueFromTable(arr, valueToRemove, removeAll)
+    local i = 0
+    while i < #arr do
+        if arr[i + 1] == valueToRemove then
+            table.remove(arr, i + 1)
             if not removeAll then
-                return
+                break
             end
+        else
+            i = i + 1
         end
     end
 end
@@ -1218,27 +1257,28 @@ function ____exports.NumHumanBotPlayersInTeam(team)
     return humanCountCache[team][1], humanCountCache[team][2]
 end
 function ____exports.GetNearbyAllyAverageHpPercent(bot, radius)
-    local averageHpPercent = 0
-    local teamPlayers = GetTeamPlayers(bot:GetTeam())
-    for ____, playerdId in ipairs(teamPlayers) do
-        local ally = GetTeamMember(playerdId)
+    local sum = 0
+    local cnt = 0
+    for ____, playerId in ipairs(GetTeamPlayers(bot:GetTeam())) do
+        local ally = GetTeamMember(playerId)
         if ally and ally:IsAlive() and GetUnitToUnitDistance(ally, bot) <= radius then
-            averageHpPercent = averageHpPercent + ally:GetHealth() / ally:GetMaxHealth()
+            sum = sum + ally:GetHealth() / ally:GetMaxHealth()
+            cnt = cnt + 1
         end
     end
-    return averageHpPercent / #teamPlayers
+    return cnt and sum / cnt or 0
 end
 function ____exports.IsWithoutSpellShield(npcEnemy)
     return not npcEnemy:HasModifier("modifier_item_sphere_target") and not npcEnemy:HasModifier("modifier_antimage_spell_shield") and not npcEnemy:HasModifier("modifier_item_lotus_orb_active")
 end
 function ____exports.SetContains(set, key)
-    return set[key] ~= nil
+    return not not set[key]
 end
 function ____exports.AddToSet(set, key)
     set[key] = true
 end
 function ____exports.RemoveFromSet(set, key)
-    set[key] = nil
+    __TS__Delete(set, key)
 end
 function ____exports.HasValue(set, value)
     for _, element in ipairs(set) do
@@ -1332,10 +1372,12 @@ function ____exports.GetOffsetLocationTowardsTargetLocation(initLoc, targetLoc, 
     )
 end
 function ____exports.TimeNeedToHealHP(bot)
-    return (bot:GetMaxHealth() - bot:GetHealth()) / bot:GetHealthRegen()
+    local r = bot:GetHealthRegen()
+    return r > 0 and (bot:GetMaxHealth() - bot:GetHealth()) / r or math.huge
 end
 function ____exports.TimeNeedToHealMP(bot)
-    return (bot:GetMaxMana() - bot:GetMana()) / bot:GetManaRegen()
+    local r = bot:GetManaRegen()
+    return r > 0 and (bot:GetMaxMana() - bot:GetMana()) / r or math.huge
 end
 function ____exports.HasAnyEffect(unit, ...)
     local effects = {...}
@@ -1411,7 +1453,7 @@ function ____exports.getCustomAvoidanceZones()
 end
 local specialOffensiveHeroes = {HeroName.ArcWarden, HeroName.Phoenix, HeroName.Terrorblade}
 function ____exports.IsSpecialOffensiveHero(name)
-    return specialOffensiveHeroes[name] ~= nil
+    return __TS__ArrayIncludes(specialOffensiveHeroes, name)
 end
 function ____exports.isPositionInAvoidanceZone(position)
     for ____, zone in ipairs(avoidanceZones) do
@@ -1654,11 +1696,24 @@ end
 -- @param bot - The bot to check.
 -- @returns True if the team is pushing second tier or high ground, false otherwise.
 function ____exports.IsTeamPushingSecondTierOrHighGround(bot)
-    local ancient = GetAncient(GetOpposingTeam())
-    if ancient ~= nil then
-        local res = #bot:GetNearbyHeroes(2000, false, BotMode.None) > 2 and (____exports.IsNearEnemySecondTierTower(bot, 2000) or ____exports.IsNearEnemyHighGroundTower(bot, 3000) or GetUnitToUnitDistance(bot, ancient) < 3000)
-        return res
+    local cacheKey = "IsTeamPushingSecondTierOrHighGround" .. tostring(bot:GetTeam())
+    local cachedRes = ____exports.GetCachedVars(cacheKey, 1)
+    if cachedRes ~= nil then
+        return cachedRes
     end
+    local enemyAncient = GetAncient(GetOpposingTeam())
+    if enemyAncient ~= nil then
+        for ____, playerdId in ipairs(GetTeamPlayers(bot:GetTeam())) do
+            if IsHeroAlive(playerdId) then
+                local teamMember = GetTeamMember(playerdId)
+                if teamMember ~= nil and #teamMember:GetNearbyHeroes(2000, false, BotMode.None) > 2 and (____exports.IsNearEnemySecondTierTower(teamMember, 2000) or ____exports.IsNearEnemyHighGroundTower(teamMember, 3000) or GetUnitToUnitDistance(teamMember, enemyAncient) < 3000) then
+                    ____exports.SetCachedVars(cacheKey, true)
+                    return true
+                end
+            end
+        end
+    end
+    ____exports.SetCachedVars(cacheKey, false)
     return false
 end
 --- Get the number of alive heroes.
@@ -1685,7 +1740,7 @@ function ____exports.CountMissingEnemyHeroes()
     local count = 0
     for ____, playerdId in ipairs(GetTeamPlayers(GetOpposingTeam())) do
         do
-            local __continue237
+            local __continue262
             repeat
                 if IsHeroAlive(playerdId) then
                     local lastSeenInfo = GetHeroLastSeenInfo(playerdId)
@@ -1693,14 +1748,14 @@ function ____exports.CountMissingEnemyHeroes()
                         local firstInfo = lastSeenInfo[1]
                         if firstInfo.time_since_seen >= 2.5 then
                             count = count + 1
-                            __continue237 = true
+                            __continue262 = true
                             break
                         end
                     end
                 end
-                __continue237 = true
+                __continue262 = true
             until true
-            if not __continue237 then
+            if not __continue262 then
                 break
             end
         end
@@ -1717,11 +1772,8 @@ function ____exports.FindAllyWithAtLeastDistanceAway(bot, nDistance)
         print("[ERROR] Wrong usage of the method")
         return nil
     end
-    local teamPlayers = GetTeamPlayers(GetTeam())
-    for ____, ____value in __TS__Iterator(__TS__ArrayEntries(teamPlayers)) do
-        local index = ____value[1]
-        local _ = ____value[2]
-        local teamMember = GetTeamMember(index)
+    for ____, playerId in ipairs(GetTeamPlayers(GetTeam())) do
+        local teamMember = GetTeamMember(playerId)
         if teamMember ~= nil and teamMember:IsAlive() and GetUnitToUnitDistance(teamMember, bot) >= nDistance then
             return teamMember
         end
@@ -1755,16 +1807,36 @@ end
 -- @param bot - The bot unit to check around.
 -- @param nRadius - The search radius (e.g. 500 or 2000).
 -- @returns true if we found at least one special AOE threat in range.
+local blinkBuffer = 1200
 function ____exports.IsAnySpecialAOEThreatNearby(bot, nRadius)
     for ____, enemy in ipairs(GetUnitList(UnitType.EnemyHeroes)) do
-        local enemyName = enemy:GetUnitName()
-        if ____exports.IsValidHero(enemy) and SpecialAOEHeroesDetails[enemyName] ~= nil then
-            local threatInfo = SpecialAOEHeroesDetails[enemyName]
-            if #bot:GetNearbyHeroes(nRadius, false, BotMode.None) <= 1 and #bot:GetNearbyLaneCreeps(nRadius, false) <= 2 then
-                return false
-            end
-            if DoesHeroMeetThreatConditions(enemy, threatInfo) then
-                return true
+        do
+            local __continue291
+            repeat
+                if not ____exports.IsValidHero(enemy) then
+                    __continue291 = true
+                    break
+                end
+                local enemyName = enemy:GetUnitName()
+                if not (SpecialAOEHeroesDetails[enemyName] ~= nil) then
+                    __continue291 = true
+                    break
+                end
+                if GetUnitToUnitDistance(bot, enemy) > nRadius + blinkBuffer then
+                    __continue291 = true
+                    break
+                end
+                if #bot:GetNearbyHeroes(nRadius, false, BotMode.None) <= 1 and #bot:GetNearbyLaneCreeps(nRadius, false) <= 2 then
+                    __continue291 = true
+                    break
+                end
+                if DoesHeroMeetThreatConditions(enemy, SpecialAOEHeroesDetails[enemyName]) then
+                    return true
+                end
+                __continue291 = true
+            until true
+            if not __continue291 then
+                break
             end
         end
     end
@@ -2022,10 +2094,8 @@ end
 -- @param targetLoc - The location to check.
 -- @returns True if the team has a member with a critical spell in cooldown, false otherwise.
 function ____exports.HasTeamMemberWithCriticalSpellInCooldown(targetLoc)
-    for ____, ____value in __TS__Iterator(__TS__ArrayEntries(GetTeamPlayers(GetTeam()))) do
-        local index = ____value[1]
-        local _ = ____value[2]
-        local teamMember = GetTeamMember(index)
+    for ____, playerId in ipairs(GetTeamPlayers(GetTeam())) do
+        local teamMember = GetTeamMember(playerId)
         if teamMember ~= nil and teamMember:IsAlive() then
             local nDuration = GetUnitToLocationDistance(teamMember, targetLoc) / teamMember:GetCurrentMovementSpeed()
             if ____exports.HasCriticalSpellWithCooldown(teamMember, nDuration) then
@@ -2041,10 +2111,8 @@ end
 -- @param targetLoc - The location to check.
 -- @returns True if the team has a member with a critical item in cooldown, false otherwise.
 function ____exports.HasTeamMemberWithCriticalItemInCooldown(targetLoc)
-    for ____, ____value in __TS__Iterator(__TS__ArrayEntries(GetTeamPlayers(GetTeam()))) do
-        local index = ____value[1]
-        local _ = ____value[2]
-        local teamMember = GetTeamMember(index)
+    for ____, playerId in ipairs(GetTeamPlayers(GetTeam())) do
+        local teamMember = GetTeamMember(playerId)
         if teamMember ~= nil and teamMember:IsAlive() then
             local nDuration = GetUnitToLocationDistance(teamMember, targetLoc) / teamMember:GetCurrentMovementSpeed()
             for ____, itemName in ipairs(____exports.ImportantItems) do
@@ -2071,7 +2139,7 @@ end
 function ____exports.GetWallIllusionPositions(bot)
     local positions = {}
     if ____exports.HasPossibleWallOfReplicaAround(bot) then
-        local enemies = bot:GetNearbyHeroes(1600, false, BotMode.None)
+        local enemies = bot:GetNearbyHeroes(1600, true, BotMode.None)
         for ____, enemy in ipairs(enemies) do
             if enemy:HasModifier("modifier_darkseer_wallofreplica_illusion") then
                 positions[#positions + 1] = enemy:GetLocation()
@@ -2210,8 +2278,8 @@ function ____exports.IsBotThinkingMeaningfulAction(bot, thinkLess, ____type)
     end
     local cacheKey = (("IsBotThinkingMeaningfulAction" .. tostring(bot:GetPlayerID())) .. "_") .. ____type
     local cachedRes = ____exports.GetCachedVars(cacheKey, 0.11 * thinkLess)
-    if not cachedRes then
-        return false
+    if cachedRes ~= nil then
+        return cachedRes
     end
     do
         local ____try, ____hasReturned, ____returnValue = pcall(function()

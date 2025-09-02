@@ -2,7 +2,7 @@
  * The Dota2 bot scriping interfaces from Valve. https://developer.valvesoftware.com/wiki/Dota_Bot_Scripting
  */
 
-import { BotActionType, BotMode, Lane, Team } from "./enums";
+import { BotActionType, BotMode, DamageType, Lane, Team } from "./enums";
 
 export interface Location {}
 
@@ -73,6 +73,16 @@ export interface Unit {
     IsInvulnerable(): boolean;
 
     IsBot(): boolean;
+
+    GetAttackSpeed(): number;
+
+    GetActualIncomingDamage(damage: number, damageType: DamageType): number;
+
+    Action_AttackMove(location: Vector): void;
+
+    IsCreep(): boolean;
+
+    IsDominated(): boolean;
 
     IsIllusion(): boolean;
 

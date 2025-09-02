@@ -865,7 +865,7 @@ function X.ShouldRun(bot)
 	local aliveEnemyCount = J.GetNumOfAliveHeroes(true)
 	local rushEnemyTowerDistance = 250;
 
-	if enemyFountainDistance < 1560
+	if enemyFountainDistance < 1000
 	then
 		return 2;
 	end
@@ -924,7 +924,7 @@ function X.ShouldRun(bot)
 	local nEnemyTowers = bot:GetNearbyTowers(898, true);
 	local nEnemyBrracks = bot:GetNearbyBarracks(800,true);
 	
-	if #nEnemyBrracks >= 1 and aliveEnemyCount >= 2
+	if #nEnemyBrracks >= 1 and aliveEnemyCount >= 2 and #hEnemyHeroList >= #hAllyHeroList
 	then
 		if #nEnemyTowers >= 2
 		   or enemyAncientDistance <= 1314
@@ -935,7 +935,7 @@ function X.ShouldRun(bot)
 	end
 	
 
-	if nEnemyTowers[1] ~= nil and botLevel < 20
+	if nEnemyTowers[1] ~= nil and botLevel < 16
 	then
 		if nEnemyTowers[1]:HasModifier("modifier_invulnerable") and aliveEnemyCount > 1
 		then

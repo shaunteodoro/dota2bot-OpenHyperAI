@@ -31,7 +31,7 @@ local gateWarp = bot:GetAbilityByName("twin_gate_portal_warp")
 local enableGateUsage = false -- twin_gate_portal_warp to be fixed
 local arriveGankLocTime = 0
 local gankTimeAfterArrival = 0.55 * 60 -- stay to roam after arriving the location
-local gankGapTime = 4 * 60 -- don't roam again within this duration after roaming once.
+local gankGapTime = 6 * 60 -- don't roam again within this duration after roaming once.
 local lastStaticLinkDebuffStack = 0
 local AnyUnitAffectedByChainFrost = false
 local HasPossibleWallOfReplicaAround = false
@@ -1009,7 +1009,15 @@ function CheckLaneToGank(botPosition)
 		return BOT_ACTION_DESIRE_VERYHIGH
 	end
 
-	if J.IsInLaningPhase() and (DotaTime() - lastGankDecisionTime < gankGapTime and lastGankDecisionTime ~= 0) then
+	local botLvlTooLow = (J.GetPosition(bot) == 1 and botLevel < 6) or
+		(J.GetPosition(bot) == 2 and botLevel < 6) or
+		(J.GetPosition(bot) == 3 and botLevel < 5) or
+		(J.GetPosition(bot) == 4 and botLevel < 4) or
+		(J.GetPosition(bot) == 5 and botLevel < 4)
+
+	if J.IsInLaningPhase()
+		and ((DotaTime() - lastGankDecisionTime < gankGapTime and lastGankDecisionTime ~= 0)
+			or botLvlTooLow) then
 		return BOT_MODE_DESIRE_NONE
 	end
 

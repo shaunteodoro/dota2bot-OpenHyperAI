@@ -20,8 +20,9 @@ local hTargetSpot = nil
 local fLastWardPlantTime = -math.huge
 
 function GetDesire()
+	if J.GetPosition(bot) <= 3 then return false end
 	local cacheKey = 'GetWardDesire'..tostring(bot:GetPlayerID())
-	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.5 * (1 + Customize.ThinkLess))
+	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.6 * (1 + Customize.ThinkLess))
 	if cachedVar ~= nil then return cachedVar end
 	local res = GetDesireHelper()
 	J.Utils.SetCachedVars(cacheKey, res)
@@ -29,6 +30,15 @@ function GetDesire()
 end
 function GetDesireHelper()
     if not X.IsSuitableToWard() then
+        return BOT_MODE_DESIRE_NONE
+    end
+
+	-- 如果在打高地 就别撤退去干别的
+	if J.Utils.IsTeamPushingSecondTierOrHighGround(bot) then
+		return BOT_MODE_DESIRE_NONE
+	end
+	local enemiesAtAncient = J.Utils.CountEnemyHeroesNear(GetAncient(GetTeam()):GetLocation(), 3200)
+    if enemiesAtAncient >= 1 then
         return BOT_MODE_DESIRE_NONE
     end
 

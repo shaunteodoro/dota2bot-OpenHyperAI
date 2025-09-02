@@ -22,13 +22,26 @@ local bHumanInTeam = false
 
 function GetDesire()
 	local cacheKey = 'GetSideShopDesire'..tostring(bot:GetPlayerID())
-	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.5 * (1 + Customize.ThinkLess))
+	local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.6 * (1 + Customize.ThinkLess))
 	if cachedVar ~= nil then return cachedVar end
 	local res = GetDesireHelper()
 	J.Utils.SetCachedVars(cacheKey, res)
 	return res
 end
 function GetDesireHelper()
+	-- 如果在打高地 就别撤退去干别的
+	if J.Utils.IsTeamPushingSecondTierOrHighGround(bot) then
+		return BOT_MODE_DESIRE_NONE
+	end
+	local enemiesAtAncient = J.Utils.CountEnemyHeroesNear(GetAncient(GetTeam()):GetLocation(), 3200)
+    if enemiesAtAncient >= 1 then
+        return BOT_MODE_DESIRE_NONE
+    end
+    -- 核心已经很肥 不需要浪费时间去打tormentor
+    if J.GetCoresAverageNetworth() >= 23000 then
+        return BOT_MODE_DESIRE_NONE
+    end
+
     if DotaTime() > 300 and DotaTime() - bot.tormentor_kill_time <= nRestForSeconds then
 		return BOT_MODE_DESIRE_VERYHIGH
     end

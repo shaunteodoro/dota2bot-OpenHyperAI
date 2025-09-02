@@ -4,7 +4,7 @@ local Customize = require(GetScriptDirectory()..'/Customize/general')
 Customize.ThinkLess = Customize.Enable and Customize.ThinkLess or 1
 local bot = GetBot()
 
-local MAX_DIST = 1600
+local MAX_DIST = 2000
 local minute = 0
 local second = 0
 local ClosestRune = -1
@@ -49,10 +49,6 @@ function GetDesireHelper()
     if #nInRangeEnemy > 0 and not J.IsInLaningPhase() then
         return BOT_MODE_DESIRE_NONE
     end
-	local nInRangeAlly = bot:GetNearbyHeroes(1600, false, BOT_MODE_NONE)
-	if #nInRangeAlly > 0 and not nInRangeAlly[1]:IsBot() then
-		return BOT_MODE_DESIRE_NONE
-	end
 
     botActiveMode = bot:GetActiveMode()
 	bBottle = J.HasItem(bot, 'item_bottle')
@@ -61,6 +57,10 @@ function GetDesireHelper()
 	if J.Utils.IsTeamPushingSecondTierOrHighGround(bot) then
 		return BOT_MODE_DESIRE_NONE
 	end
+	local enemiesAtAncient = J.Utils.CountEnemyHeroesNear(GetAncient(GetTeam()):GetLocation(), 3200)
+    if enemiesAtAncient >= 1 then
+        return BOT_MODE_DESIRE_NONE
+    end
 	if J.IsFarming(bot) and J.IsPushing(bot) and J.IsDefending(bot) then
 		return BOT_MODE_DESIRE_NONE
 	end
@@ -124,6 +124,17 @@ function GetDesireHelper()
 
 	ClosestRune, ClosestDistance = X.GetBotClosestRune()
 
+	if ClosestRune ~= -1 and ClosestDistance < 1600 then
+		local nInRangeAlly = bot:GetNearbyHeroes(1600, false, BOT_MODE_NONE)
+		if #nInRangeAlly > 0 then
+			for _, ally in pairs(nInRangeAlly) do
+				if not ally:IsBot() then
+					return BOT_MODE_DESIRE_NONE
+				end
+			end
+		end
+	end
+
     if not X.IsSuitableToPickRune(ClosestRune) then
         return BOT_MODE_DESIRE_NONE
     end
@@ -134,12 +145,6 @@ function GetDesireHelper()
         if #nEnemyHeroes <= 1 then
             return BOT_MODE_DESIRE_MODERATE
         end
-    end
-
-    if J.IsLateGame() and X.IsUnitAroundLocation(GetAncient(GetTeam()):GetLocation(), 2800) then
-        MAX_DIST = 900
-    else
-        MAX_DIST = 1600
     end
 
 	if ClosestRune ~= -1 and ClosestDistance < 6000 then
@@ -262,7 +267,7 @@ function Think()
 			bot.wisdom[timeInMin][wisdomRuneInfo[2]] = true
 		end
 
-		bot:Action_MoveDirectly(vWisdomSpot)
+		bot:Action_MoveDirectly(vWisdomSpot + RandomVector(60))
 		return
 	end
 
@@ -333,7 +338,7 @@ function Think()
 
 			if X.CouldBlink(GetRuneSpawnLocation(ClosestRune)) then return end
 
-			bot:Action_MoveToLocation(GetRuneSpawnLocation(ClosestRune) + RandomVector(35))
+			bot:Action_MoveToLocation(GetRuneSpawnLocation(ClosestRune) + RandomVector(25))
 			return
 		else
 			bot:Action_PickUpRune(ClosestRune)
@@ -562,8 +567,17 @@ function X.IsEnemyPickRune(nRune)
 	return false
 end
 
+local maxDesire = 0.85
 function X.GetScaledDesire(nBase, nCurrDist, nMaxDist)
-    return Clamp(nBase + RemapValClamped(nCurrDist, nMaxDist, 0, 0, 1 - nBase), 0, 0.95)
+	if nCurrDist > 900 and (J.IsLateGame() or J.GetDistanceFromEnemyFountain( bot ) < 6500) then
+		maxDesire = 0.45
+	end
+	local hp = J.GetHP(bot)
+	local resDesire = Clamp(nBase * RemapValClamped(nCurrDist, 0, nMaxDist, 1, 0.1), 0, maxDesire)
+	if hp < 0.6 then
+		resDesire = RemapValClamped(hp, 0, 0.8, 0, resDesire)
+	end
+	return resDesire
 end
 
 function X.GetGoOutLocation()

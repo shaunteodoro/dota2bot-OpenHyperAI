@@ -44,11 +44,37 @@ local lastCheckBotToDropTime = 0
 
 local IsAvoidingAbilityZone = false
 
+-- Target stickiness + desire clamp
+local TARGET_LOCK_SEC = 1.2
+local targetLockUntil = -90
+
+local function SetStickyTarget(t)
+    if t == nil then return end
+    -- Don't switch targets too fast
+    if targetUnit ~= nil and targetUnit ~= t and DotaTime() < targetLockUntil then
+        return
+    end
+    targetUnit = t
+    bot:SetTarget(t)
+    targetLockUntil = DotaTime() + TARGET_LOCK_SEC
+end
+
+local function CapForLanePush(desire)
+    -- keep "team roam" from overpowering laning/pushing micro
+    if J.IsInLaningPhase() or J.IsPushing(bot) then
+        if desire > 0.9 then return 0.72 end  -- soft ceiling
+    end
+    return desire
+end
+
 function GetDesire()
     local cacheKey = 'GetTeamRoamDesire'..tostring(bot:GetPlayerID())
-    local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.35 * (1 + Customize.ThinkLess))
+    local cachedVar = J.Utils.GetCachedVars(cacheKey, 0.6 * (1 + Customize.ThinkLess))
     if cachedVar ~= nil then return cachedVar end
+
     local res = GetDesireHelper()
+    res = CapForLanePush(res)
+
     J.Utils.SetCachedVars(cacheKey, res)
     return res
 end
@@ -82,7 +108,7 @@ function GetDesireHelper()
     local target
     target, ShouldHelpWhenCoreIsTargeted = X.ConsiderHelpWhenCoreIsTargeted()
     if ShouldHelpWhenCoreIsTargeted then
-        bot:SetTarget(target)
+        SetStickyTarget(target)
         targetUnit = target
         return RemapValClamped(J.GetHP(bot), 0, 0.5, BOT_MODE_DESIRE_NONE, 0.98)
     end
@@ -92,7 +118,7 @@ function GetDesireHelper()
 
     target, ShouldHelpAlly = ConsiderHelpAlly()
     if ShouldHelpAlly then
-        bot:SetTarget(target)
+        SetStickyTarget(target)
         targetUnit = target
         return RemapValClamped(J.GetHP(bot), 0, 0.6, BOT_MODE_DESIRE_NONE, 0.98)
     end
@@ -233,6 +259,17 @@ function Think()
 
     ItemOpsThink()
 
+	-- Leash & validity guard to prevent pacing back and forth
+	if targetUnit ~= nil then
+		if (not J.Utils.IsValidUnit(targetUnit))
+		or (not X.CanBeAttacked(targetUnit))
+		or (GetUnitToUnitDistance(bot, targetUnit) > 1800)  -- too far = drop it
+		or (bot:GetActiveMode() == BOT_MODE_LANING and GetUnitToUnitDistance(bot, targetUnit) > bot:GetAttackRange() + 250)
+		then
+			targetUnit = nil
+		end
+	end
+
     if IsAvoidingAbilityZone then
         bot:Action_MoveToLocation(Utils.GetOffsetLocationTowardsTargetLocation(bot:GetLocation(), J.GetTeamFountain(), 600) + RandomVector(200))
         return
@@ -303,11 +340,14 @@ function X.SupportFindTarget()
         return nTarget, BOT_MODE_DESIRE_ABSOLUTE * 0.96
     end
 
-    local enemyCourier = X.GetEnemyCourier(bot, nAttackRange + botLV * 2 + 20)
-    if enemyCourier ~= nil and not enemyCourier:IsAttackImmune() and not enemyCourier:IsInvulnerable()
-    and J.GetHP(bot) > 0.3 and not J.IsRetreating(bot) then
-        return enemyCourier, BOT_MODE_DESIRE_ABSOLUTE * 1.5
-    end
+	-- Avoid derailing laning/pushing for courier hunts
+	if not J.IsInLaningPhase() and not J.IsPushing(bot) then
+		local enemyCourier = X.GetEnemyCourier(bot, nAttackRange + botLV * 2 + 20)  -- or +30 in carry version
+		if enemyCourier ~= nil and not enemyCourier:IsAttackImmune() and not enemyCourier:IsInvulnerable()
+		and J.GetHP(bot) > 0.3 and not J.IsRetreating(bot) then
+			return enemyCourier, BOT_MODE_DESIRE_ABSOLUTE * 1.2
+		end
+	end
 
     if botMode == BOT_MODE_RETREAT and botLV > 9 and not X.CanBeInVisible(bot) and X.ShouldNotRetreat(bot) then
         nTarget = J.GetAttackableWeakestUnit(bot, nAttackRange + 50, true, true)
@@ -411,11 +451,14 @@ function X.CarryFindTarget()
         return nil, 0
     end
 
-    local enemyCourier = X.GetEnemyCourier(bot, nAttackRange + botLV * 2 + 30)
-    if enemyCourier ~= nil and not enemyCourier:IsAttackImmune() and not enemyCourier:IsInvulnerable()
-    and J.GetHP(bot) > 0.3 and not J.IsRetreating(bot) then
-        return enemyCourier, BOT_MODE_DESIRE_ABSOLUTE * 1.5
-    end
+	-- Avoid derailing laning/pushing for courier hunts
+	if not J.IsInLaningPhase() and not J.IsPushing(bot) then
+		local enemyCourier = X.GetEnemyCourier(bot, nAttackRange + botLV * 2 + 20)  -- or +30 in carry version
+		if enemyCourier ~= nil and not enemyCourier:IsAttackImmune() and not enemyCourier:IsInvulnerable()
+		and J.GetHP(bot) > 0.3 and not J.IsRetreating(bot) then
+			return enemyCourier, BOT_MODE_DESIRE_ABSOLUTE * 1.2
+		end
+	end
 
     if botMode == BOT_MODE_RETREAT
     and botName ~= "npc_dota_hero_bristleback"

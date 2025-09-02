@@ -390,7 +390,7 @@ function X.GetUnitDesire(nRadius)
             if not unit:HasModifier('modifier_arc_warden_tempest_double') and J.IsSuspiciousIllusion(unit)
             then
                 local tIllusions = J.GetSameUnitType(bot, 1600, sUnitName, false)
-                unitDamage = J.GetUnitListTotalAttackDamage(tIllusions, 5.0)
+                unitDamage = J.GetUnitListTotalAttackDamage(bot, tIllusions, 5.0)
                 local illusionDamage = bot:GetActualIncomingDamage(unitDamage, DAMAGE_TYPE_PHYSICAL) - botHealthRegen * 5.0
 
                 if illusionDamage / botHealth > 0.5 then
@@ -403,7 +403,7 @@ function X.GetUnitDesire(nRadius)
             elseif string.find(sUnitName, 'warlock_golem') and bIsTargetingThisBot
             then
                 local tWarlockGolems = J.GetSameUnitType(bot, 1600, sUnitName, false)
-                unitDamage = J.GetUnitListTotalAttackDamage(tWarlockGolems, 5.0)
+                unitDamage = J.GetUnitListTotalAttackDamage(bot, tWarlockGolems, 5.0)
                 local golemsDamage = bot:GetActualIncomingDamage(unitDamage, DAMAGE_TYPE_PHYSICAL) - botHealthRegen * 5.0
 
                 if golemsDamage / botHealth > 0.45 then
@@ -413,7 +413,7 @@ function X.GetUnitDesire(nRadius)
                 and not J.IsInTeamFight(bot, 1600)
             then
                 local tSpiderlings = J.GetSameUnitType(bot, 1600, sUnitName, true)
-                unitDamage = J.GetUnitListTotalAttackDamage(tSpiderlings, 5.0)
+                unitDamage = J.GetUnitListTotalAttackDamage(bot, tSpiderlings, 5.0)
                 local spiderlingsDamage = bot:GetActualIncomingDamage(unitDamage, DAMAGE_TYPE_PHYSICAL) - botHealthRegen * 5.0
 
                 if spiderlingsDamage / botHealth > 0.25 then
@@ -423,7 +423,7 @@ function X.GetUnitDesire(nRadius)
                 and not J.IsInTeamFight(bot, 1600)
             then
                 local tEidolons = J.GetSameUnitType(bot, 1600, sUnitName, true)
-                unitDamage = J.GetUnitListTotalAttackDamage(tEidolons, 5.0)
+                unitDamage = J.GetUnitListTotalAttackDamage(bot, tEidolons, 5.0)
                 local eidolonDamage = bot:GetActualIncomingDamage(unitDamage, DAMAGE_TYPE_PHYSICAL) - botHealthRegen * 5.0
 
                 if eidolonDamage / botHealth > 0.25 then
@@ -491,14 +491,14 @@ function X.ShouldRun()
         end
     end
 
-	local nDistanceFromEnemyFountain = J.GetDistanceFromEnemyFountain(bot)
-	local nDistanceFromEnemyAncient = GetUnitToUnitDistance(bot, hEnemyAncient)
-	local nAliveEnemyCount = J.GetNumOfAliveHeroes(true)
-	local rushEnemyTowerDistance = 250
+	-- local nDistanceFromEnemyFountain = J.GetDistanceFromEnemyFountain(bot)
+	-- local nDistanceFromEnemyAncient = GetUnitToUnitDistance(bot, hEnemyAncient)
+	-- local nAliveEnemyCount = J.GetNumOfAliveHeroes(true)
+	-- local rushEnemyTowerDistance = 250
 
-	if nDistanceFromEnemyFountain < 1560 then
-		return 2
-	end
+	-- if nDistanceFromEnemyFountain < 999 then
+	-- 	return 2
+	-- end
 
     -- local botAssignedLane = bot:GetAssignedLane()
 	-- if botLevel <= 4 and nDistanceFromEnemyFountain < 8000 then
@@ -554,19 +554,19 @@ function X.ShouldRun()
 	-- 	end
 	-- end
 
-	local nEnemyTowers = bot:GetNearbyTowers(900, true)
-	local nEnemyBarracks = bot:GetNearbyBarracks(900, true)
-	local enemyAncient = GetAncient(GetOpposingTeam());
-    local enemyAncientDistance = GetUnitToUnitDistance(bot,enemyAncient);
+	-- local nEnemyTowers = bot:GetNearbyTowers(900, true)
+	-- local nEnemyBarracks = bot:GetNearbyBarracks(900, true)
+	-- local enemyAncient = GetAncient(GetOpposingTeam());
+    -- local enemyAncientDistance = GetUnitToUnitDistance(bot,enemyAncient);
 
-	if #nEnemyBarracks >= 1 and nAliveEnemyCount >= 2 then
-		if #nEnemyTowers >= 2
-        or nDistanceFromEnemyAncient <= 1314
-        or nDistanceFromEnemyFountain <= 2828
-		then
-			return 2
-		end
-	end
+	-- if #nEnemyBarracks >= 1 and nAliveEnemyCount >= 2 then
+	-- 	if #nEnemyTowers >= 2
+    --     or nDistanceFromEnemyAncient <= 1314
+    --     or nDistanceFromEnemyFountain <= 2828
+	-- 	then
+	-- 		return 2
+	-- 	end
+	-- end
 
     -- if #nEnemyTowers >= 1
 	-- and enemyAncientDistance < 7000 then -- 推2塔或者高地不要无视防御符文下的防御塔

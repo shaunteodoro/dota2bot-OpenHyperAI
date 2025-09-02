@@ -146,7 +146,7 @@ function J.HasMovableUndyingModifier(botTarget, nDelay)
             MovableUndyingModifierRemain = J.GetModifierTime(botTarget, mName)
             -- print(DotaTime().." - Target has undying modifier "..mName..", the remaining time: " .. tostring(MovableUndyingModifierRemain) .. " seconds, check delay: "..tostring(nDelay))
             if MovableUndyingModifierRemain > 0 then
-				if DotaTime() < DotaTime() + MovableUndyingModifierRemain - nDelay then
+				if MovableUndyingModifierRemain > nDelay then
 					return true
 				end
 				return false
@@ -739,7 +739,7 @@ function J.IsNoItemIllution(bot)
 
 	if (bot:IsIllusion() or J.IsMeepoClone(bot))
 	and not bot:HasModifier("modifier_arc_warden_tempest_double")
-	and not bot:GetUnitName() == 'npc_dota_hero_vengefulspirit'
+	and bot:GetUnitName() ~= 'npc_dota_hero_vengefulspirit'
 	then
 		-- J.Utils.SetCachedVars(cacheKey, true)
 		return true
@@ -755,7 +755,7 @@ function J.IsNoAbilityIllution(bot)
 
 	if bot:IsIllusion()
 	and not bot:HasModifier("modifier_arc_warden_tempest_double")
-	and not bot:GetUnitName() == 'npc_dota_hero_vengefulspirit'
+	and bot:GetUnitName() ~= 'npc_dota_hero_vengefulspirit'
 	and not J.IsMeepoClone(bot)
 	then
 		-- J.Utils.SetCachedVars(cacheKey, true)
@@ -1177,20 +1177,18 @@ function J.HasForbiddenModifier( npcTarget )
 			end
 		end
 		
+		-- 有的玩家太菜了，特地加一个判断让这个玩家舒服一点
 		if not npcTarget:IsBot()
 		then
-			
 			local nID = npcTarget:GetPlayerID()
 			local nKillCount = GetHeroKills( nID )
 			local nDeathCount = GetHeroDeaths( nID )
-			
-			if nDeathCount >= 6 
+			if nDeathCount >= 6
 				and nKillCount <= 6
-				and nKillCount / nDeathCount <= 0.5
+				and nKillCount / nDeathCount <= 0.3
 			then
 				return true
 			end
-		
 		end
 		
 	else
@@ -1239,7 +1237,7 @@ function J.GetSameUnitType(hUnit, nRadius, sUnitName, bAttacking)
 
     return tAttackingUnits
 end
-function J.GetUnitListTotalAttackDamage(tUnits, fTimeInterval)
+function J.GetUnitListTotalAttackDamage(bot, tUnits, fTimeInterval)
     local dmg = 0
 	for _, unit in pairs(tUnits) do
 		if J.IsValid(unit) then
@@ -1546,6 +1544,20 @@ function J.IsGoingOnSomeone( bot )
 		or mode == BOT_MODE_ATTACK
 		or mode == BOT_MODE_DEFEND_ALLY
 
+end
+
+local function IsEnemyTerrorbladeNear(unit, nRadius)
+	for _, enemy in pairs(GetUnitList(UNIT_LIST_ENEMY_HEROES)) do
+		if J.IsValidHero(enemy)
+		and J.IsInRange(unit, enemy, nRadius)
+		and enemy:GetUnitName() == 'npc_dota_hero_terrorblade'
+		and not J.IsSuspiciousIllusion(enemy)
+		then
+			return true
+		end
+	end
+
+	return false
 end
 
 local function GetUnitAttackDamage(unit, fInterval, bIllusion)
@@ -4318,7 +4330,7 @@ function J.GetLowestHPUnit(tUnits, bIgnoreImmune)
 	for _,unit in pairs(tUnits)
 	do
 		local hp = unit:GetHealth()
-		if hp < lowestHP and ( bIgnoreImmune or ( not bNotMagicImmune and not unit:IsMagicImmune() ) ) then
+		if hp < lowestHP and ( bIgnoreImmune or not unit:IsMagicImmune() ) then
 			lowestHP   = hp;
 			lowestUnit = unit;
 		end
@@ -4345,7 +4357,7 @@ function J.CountVulnerableUnit(tUnits, locAOE, nRadius, nUnits)
 end
 
 function J.GetProperLocation(hUnit, nDelay)
-	if hUnit:GetMovementDirectionStability() >= 0 then
+	if hUnit:GetMovementDirectionStability() >= 0.5 then
 		return hUnit:GetExtrapolatedLocation(nDelay);
 	end
 	return hUnit:GetLocation();
@@ -6109,7 +6121,7 @@ function J.GetHeroCountAttackingTarget(nUnits, target)
 		and J.IsInRange(hero, target, 1600)
 		and J.IsGoingOnSomeone(hero)
 		and hero:CanBeSeen()
-		and (hero:GetAttackTarget() == hero or hero:GetTarget() == hero)
+		and (hero:GetAttackTarget() == target or hero:GetTarget() == target)
 		and not J.IsSuspiciousIllusion(hero)
 		then
 			count = count + 1
