@@ -8,6 +8,9 @@ Dota2Teams.maxTeamSize = 12 -- e.g. for 12 v 12
 
 -- List should have a least 4 teams for better performance.
 local defaultTeams = {
+    {name = "XG", players = {"Ame", "Xm", "Xxs", "XinQ", "xNova"}},                  -- Xtreme Gaming
+    {name = "PARI", players = {"Satanic", "No[o]ne-", "DM", "9Class", "Dukalis"}},   -- PARIVISION
+    {name = "FLCN", players = {"ATF", "Malr1ne", "skiter", "Sneyking", "Cr1t-"}},    -- Team Falcons
     {name = "LQD", players = {"miCKe", "Nisha", "zai", "Boxi", "Insania"}},          -- Liquid
     {name = "GG", players = {"dyrachyo", "Quinn", "Ace", "tOfu", "Seleri"}},         -- Gaimin Gladiators
     {name = "TUND", players = {"Skiter", "Nine", "33", "Sneyking", "Aui_2000"}},     -- Tundra Esports
@@ -27,11 +30,11 @@ local defaultTeams = {
     {name = "IG", players = {"flyfly", "Emo", "JT-", "Kaka", "Oli"}},                -- Invictus Gaming
     {name = "AR", players = {"Eurus", "Somnus", "Yang", "Fy", "xNova"}},             -- Azure Ray
     {name = "BLK", players = {"Raven", "Karl", "Kuku", "TIMS", "Eyyou"}},            -- Blacklist
-    {name = "VP", players = {"RAMZES", "kiyotaka", "MieRo", "Antares", "Solo"}},     -- Virtus Pro
     {name = "9P", players = {"RAMZES", "kiyotaka", "MieRo", "Antares", "Solo"}},     -- 9Pandas
     {name = "SMG", players = {"MidOne", "Moon", "Masaros", "Ahfu", "RPotato"}},      -- Team SMG
     {name = "KEYD", players = {"4dr", "Tavo", "hFn", "KJ", "mini"}},                 -- Keyd Stars
-    {name = "TA", players = {"Panda", "DarkM", "Sacred", "Matthew", "Pakazs"}},      -- Thunder Awaken
+    {name = "TG", players = {"watson", "Quinn", "Ace", "tOfu", "Malady"}},           -- Gaimin Gladiators
+    {name = "TA", players = {"shiro", "NothingToSay", "Bach", "planet", "y`"}},      -- Team Tidebound
     {name = "ADD", players = {
         "Azazel", "Lucifer", "Belial", "Lilith", "Diablo", "Mephisto", "Samael", "Abaddon", "Mammon", "Astaroth", "Moloch", "Apollyon", "Zagan", "Nyx", "Malphas",
         "Inferno", "Darkfire", "Shadow", "Nightmare", "Doom", "Soul", "Death", "Light", "Seraph", "Radiant", "Divine", "Angel"

@@ -124,6 +124,7 @@ local WeakHeroes = {
 	'npc_dota_hero_void_spirit',
 	'npc_dota_hero_ember_spirit',
 	'npc_dota_hero_rubick',
+	'npc_dota_hero_brewmaster',
 
 	-- Buggys (as of 2024/8/1):
     'npc_dota_hero_marci',

@@ -1,4 +1,3 @@
-/** @noResolution */
 import * as jmz from "bots/FunLib/jmz_func";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import Customize = require("bots/Customize/general");
