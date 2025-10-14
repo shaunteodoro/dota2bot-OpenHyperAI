@@ -82,7 +82,7 @@ Customize.Allow_AI_GPT_Response = true
 
 -- Set the level of bots' trash talks. Disable Allow_Trash_Talk can disable this.
 -- 1 => no trash talks from ally bots, no taunt from enemy after it gets a kill. 2 => ally bots also trash talk to you, allow taunt from enemy after it gets a kill.
-Customize.Trash_Talk_Level = 1
+Customize.Trash_Talk_Level = 2
 
 -- To set the names for the Radiant bots. Don't need to provide a value for all 5 bots, missing names will have a Random value.
 Customize.Radiant_Names = {
@@ -105,7 +105,7 @@ Customize.Force_Group_Push_Level = 1
 -- Note: these settings below will override the pre-defind settings in Fretbots folder.
 Customize.Fretbots = {
     -- Default difficulty, a number between: [0, 10]
-    Default_Difficulty = 2,
+    Default_Difficulty = 5,
 
     -- Default ally bots bonus scale comparing to enemy bots, a number between: [0, 1]
     Default_Ally_Scale = 0.5,
